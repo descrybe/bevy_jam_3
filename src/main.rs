@@ -18,6 +18,7 @@ fn main() {
         .add_system(enemy_hit_player)
         .add_system(camera_follow)
         .add_system(change_player_direction)
+        .add_system(change_enemy_direction)
         .add_event::<GameOver>()
         .init_resource::<Score>()
         .add_system(game_over_hander)
@@ -149,7 +150,7 @@ pub fn camera_follow(
     player_query: Query<&Transform, With<Player>>,
     mut camera_query: Query<&mut Transform, (Without<Player>, With<MainCamera>)>,
 ) {
-    let mut camera = camera_query.get_single_mut().unwrap();
+    let mut camera = camera_query.single_mut();
     let player = player_query.single();
 
     camera.translation.x = player.translation.x;
@@ -169,6 +170,13 @@ pub fn change_player_direction(
     }
 }
 
+pub fn change_enemy_direction(mut enemy_query: Query<(&mut Sprite, &Transform, &Enemy)>) {
+    for (mut sprite, transform, enemy) in enemy_query.iter_mut() {
+        let direction = Vec3::new(enemy.direction.x, enemy.direction.y, 0.0);
+        println!("direction {}", enemy.direction.x);
+    }
+}
+
 pub fn enemy_movement(
     mut enemy_query: Query<(&mut Transform, &Enemy), Without<Player>>,
     player_query: Query<&Transform, With<Player>>,
@@ -177,7 +185,7 @@ pub fn enemy_movement(
     let player_transform = player_query.single();
 
     for (mut transform, enemy) in enemy_query.iter_mut() {
-        let direction = Vec3::new(enemy.direction.x, enemy.direction.y, 0.0);
+        let direction = Vec3::new(0.0, 0.0,0.0);
         transform.translation += direction * ENEMY_SPEED * time.delta_seconds();
     }
 }
@@ -198,7 +206,7 @@ pub fn enemy_hit_player(
             let player_radius = PLAYER_SIZE / 2.0;
             let enemy_radius = ENEMY_SIZE / 2.0;
             if distance < player_radius + enemy_radius {
-                commands.entity(player_entity).despawn();
+                // commands.entity(player_entity).despawn();
                 game_over_event_writer.send(GameOver { score: score.value });
             }
         }
