@@ -15,6 +15,7 @@ fn main() {
         .add_startup_system(spawn_camera)
         .add_system(player_movement)
         .add_system(enemy_movement)
+        .add_system(camera_follow)
         .add_system(enemy_hit_player)
         .add_event::<GameOver>()
         .init_resource::<Score>()
@@ -24,6 +25,9 @@ fn main() {
 
 #[derive(Component)]
 pub struct Player {}
+
+#[derive(Component)]
+pub struct MainCamera {}
 
 #[derive(Component)]
 pub struct Enemy {
@@ -62,18 +66,16 @@ pub fn spawn_player(
     ));
 }
 
-pub fn spawn_camera(
-    mut commands: Commands,
-    // player_query: Query<&Transform, With<Player>>,
-    window_query: Query<&Window, With<PrimaryWindow>>,
-) {
-    // let player = player_query.get_single().unwrap();
+pub fn spawn_camera(mut commands: Commands, window_query: Query<&Window, With<PrimaryWindow>>) {
     let window = window_query.get_single().unwrap();
 
-    commands.spawn(Camera2dBundle {
-        transform: Transform::from_xyz(window.width() / 2.0, window.height() / 2.0, 0.0),
-        ..default()
-    });
+    commands.spawn((
+        Camera2dBundle {
+            transform: Transform::from_xyz(window.width() / 2.0, window.height() / 2.0, 0.0),
+            ..default()
+        },
+        MainCamera {},
+    ));
 }
 
 pub fn spawn_enemies(
@@ -132,6 +134,17 @@ pub fn player_movement(
 
         transform.translation += direction * PLAYER_SPEED * time.delta_seconds();
     }
+}
+
+pub fn camera_follow(
+    player_query: Query<&Transform, With<Player>>,
+    mut camera_query: Query<&mut Transform, (Without<Player>, With<MainCamera>)>,
+) {
+    let mut camera = camera_query.get_single_mut().unwrap();
+    let player = player_query.single();
+    
+    camera.translation.x = player.translation.x;
+    camera.translation.y = player.translation.y;
 }
 
 // pub fn change_player_animation(
