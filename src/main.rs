@@ -1,23 +1,24 @@
-use::bevy::{
-    prelude::*,
-    window::PrimaryWindow,
-};
+use ::bevy::{prelude::*, window::PrimaryWindow};
 use rand::prelude::*;
 
-pub const PLAYER_SIZE: f32 = 16.0;
+pub const PLAYER_SIZE: f32 = 32.0;
 pub const PLAYER_SPEED: f32 = 700.0;
-pub const ENEMY_SIZE: f32 = 16.0;
-pub const ENEMY_COUNT: u32 = 20;
-pub const ENEMY_SPEED: f32 = 400.0;
+pub const ENEMY_SIZE: f32 = 32.0;
+pub const ENEMY_COUNT: u32 = 10;
+pub const ENEMY_SPEED: f32 = 100.0;
 
 fn main() {
     App::new()
         .add_plugins(DefaultPlugins)
-        .add_system(player_movement)
-        .add_system(enemy_movement)
         .add_startup_system(spawn_player)
         .add_startup_system(spawn_enemies)
         .add_startup_system(spawn_camera)
+        .add_system(player_movement)
+        .add_system(enemy_movement)
+        .add_system(enemy_hit_player)
+        .add_event::<GameOver>()
+        .init_resource::<Score>()
+        .add_system(game_over_hander)
         .run();
 }
 
@@ -27,6 +28,21 @@ pub struct Player {}
 #[derive(Component)]
 pub struct Enemy {
     pub direction: Vec2,
+}
+
+#[derive(Resource)]
+pub struct Score {
+    pub value: u32,
+}
+
+impl Default for Score {
+    fn default() -> Score {
+        Score { value: 0 }
+    }
+}
+
+pub struct GameOver {
+    pub score: u32,
 }
 
 pub fn spawn_player(
@@ -46,7 +62,12 @@ pub fn spawn_player(
     ));
 }
 
-pub fn spawn_camera(mut commands: Commands, window_query: Query<&Window, With<PrimaryWindow>>) {
+pub fn spawn_camera(
+    mut commands: Commands,
+    // player_query: Query<&Transform, With<Player>>,
+    window_query: Query<&Window, With<PrimaryWindow>>,
+) {
+    // let player = player_query.get_single().unwrap();
     let window = window_query.get_single().unwrap();
 
     commands.spawn(Camera2dBundle {
@@ -87,14 +108,10 @@ pub fn player_movement(
     if let Ok(mut transform) = player_query.get_single_mut() {
         let mut direction = Vec3::ZERO;
 
-        let left_direction =
-            keyboard_input.pressed(KeyCode::Left) || keyboard_input.pressed(KeyCode::A);
-        let right_direction =
-            keyboard_input.pressed(KeyCode::Right) || keyboard_input.pressed(KeyCode::D);
-        let bottom_direction =
-            keyboard_input.pressed(KeyCode::Down) || keyboard_input.pressed(KeyCode::S);
-        let top_direction =
-            keyboard_input.pressed(KeyCode::Up) || keyboard_input.pressed(KeyCode::W);
+        let left_direction = keyboard_input.any_pressed([KeyCode::Left, KeyCode::A]);
+        let right_direction = keyboard_input.any_pressed([KeyCode::Right, KeyCode::D]);
+        let bottom_direction = keyboard_input.any_pressed([KeyCode::Down, KeyCode::S]);
+        let top_direction = keyboard_input.any_pressed([KeyCode::Up, KeyCode::W]);
 
         if left_direction {
             direction += Vec3::new(-1.0, 0.0, 0.0);
@@ -117,9 +134,51 @@ pub fn player_movement(
     }
 }
 
+// pub fn change_player_animation(
+//     keyboard_input: Res<Input<KeyCode>>,
+//     mut player_query: Query<&mut TextureAtlasSprite, With<Player>>,
+// ) {
+//     let (mut sprite) = player_query.get_single_mut();
+
+//     if keyboard_input.any_just_released([KeyCode::Left, KeyCode::A]) {
+//         sprite.flip_x = true;
+//     } else if keyboard_input.any_just_released([KeyCode::Right, KeyCode::D]) {
+//         sprite.flip_x = false;
+//     }
+// }
+
 pub fn enemy_movement(mut enemy_query: Query<(&mut Transform, &Enemy)>, time: Res<Time>) {
     for (mut transform, enemy) in enemy_query.iter_mut() {
         let direction = Vec3::new(enemy.direction.x, enemy.direction.y, 0.0);
         transform.translation += direction * ENEMY_SPEED * time.delta_seconds();
+    }
+}
+
+pub fn enemy_hit_player(
+    mut commands: Commands,
+    mut game_over_event_writer: EventWriter<GameOver>,
+    mut player_query: Query<(Entity, &Transform), With<Player>>,
+    enemy_query: Query<&Transform, With<Enemy>>,
+    score: Res<Score>,
+) {
+    if let Ok((player_entity, player_transform)) = player_query.get_single_mut() {
+        for enemy_transform in enemy_query.iter() {
+            let distance = player_transform
+                .translation
+                .distance(enemy_transform.translation);
+
+            let player_radius = PLAYER_SIZE / 2.0;
+            let enemy_radius = ENEMY_SIZE / 2.0;
+            if distance < player_radius + enemy_radius {
+                commands.entity(player_entity).despawn();
+                game_over_event_writer.send(GameOver { score: score.value });
+            }
+        }
+    }
+}
+
+pub fn game_over_hander(mut game_over_event_writer: EventReader<GameOver>) {
+    for event in game_over_event_writer.iter() {
+        println!("Game over!");
     }
 }
