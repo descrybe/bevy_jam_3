@@ -17,6 +17,7 @@ fn main() {
         .add_system(enemy_movement)
         .add_system(enemy_hit_player)
         .add_system(camera_follow)
+        .add_system(change_player_direction)
         .add_event::<GameOver>()
         .init_resource::<Score>()
         .add_system(game_over_hander)
@@ -150,25 +151,31 @@ pub fn camera_follow(
 ) {
     let mut camera = camera_query.get_single_mut().unwrap();
     let player = player_query.single();
-    
+
     camera.translation.x = player.translation.x;
     camera.translation.y = player.translation.y;
 }
 
-// pub fn change_player_animation(
-//     keyboard_input: Res<Input<KeyCode>>,
-//     mut player_query: Query<&mut TextureAtlasSprite, With<Player>>,
-// ) {
-//     let (mut sprite) = player_query.get_single_mut();
+pub fn change_player_direction(
+    keyboard_input: Res<Input<KeyCode>>,
+    mut player_query: Query<&mut Sprite, With<Player>>,
+) {
+    let mut sprite = player_query.single_mut();
 
-//     if keyboard_input.any_just_released([KeyCode::Left, KeyCode::A]) {
-//         sprite.flip_x = true;
-//     } else if keyboard_input.any_just_released([KeyCode::Right, KeyCode::D]) {
-//         sprite.flip_x = false;
-//     }
-// }
+    if keyboard_input.any_pressed([KeyCode::Left, KeyCode::A]) {
+        sprite.flip_x = true;
+    } else if keyboard_input.any_pressed([KeyCode::Right, KeyCode::D]) {
+        sprite.flip_x = false;
+    }
+}
 
-pub fn enemy_movement(mut enemy_query: Query<(&mut Transform, &Enemy)>, time: Res<Time>) {
+pub fn enemy_movement(
+    mut enemy_query: Query<(&mut Transform, &Enemy), Without<Player>>,
+    player_query: Query<&Transform, With<Player>>,
+    time: Res<Time>,
+) {
+    let player_transform = player_query.single();
+
     for (mut transform, enemy) in enemy_query.iter_mut() {
         let direction = Vec3::new(enemy.direction.x, enemy.direction.y, 0.0);
         transform.translation += direction * ENEMY_SPEED * time.delta_seconds();
