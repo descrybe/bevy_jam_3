@@ -1,9 +1,9 @@
 use ::bevy::{prelude::*, window::PrimaryWindow};
 use rand::prelude::*;
 
-pub const PLAYER_SIZE: f32 = 32.0;
+pub const PLAYER_SIZE: f32 = 50.0;
 pub const PLAYER_SPEED: f32 = 700.0;
-pub const ENEMY_SIZE: f32 = 32.0;
+pub const ENEMY_SIZE: f32 = 60.0;
 pub const ENEMY_COUNT: u32 = 10;
 pub const ENEMY_SPEED: f32 = 100.0;
 
@@ -15,8 +15,8 @@ fn main() {
         .add_startup_system(spawn_camera)
         .add_system(player_movement)
         .add_system(enemy_movement)
-        .add_system(camera_follow)
         .add_system(enemy_hit_player)
+        .add_system(camera_follow)
         .add_event::<GameOver>()
         .init_resource::<Score>()
         .add_system(game_over_hander)
@@ -58,6 +58,10 @@ pub fn spawn_player(
 
     commands.spawn((
         SpriteBundle {
+            sprite: Sprite {
+                custom_size: Option::Some(Vec2::new(PLAYER_SIZE, PLAYER_SIZE)),
+                ..default()
+            },
             transform: Transform::from_xyz(window.width() / 2.0, window.height() / 2.0, 0.0),
             texture: asset_service.load("sprites/player_sprite.png"),
             ..default()
@@ -91,8 +95,12 @@ pub fn spawn_enemies(
 
         commands.spawn((
             SpriteBundle {
+                sprite: Sprite {
+                    custom_size: Option::Some(Vec2::new(ENEMY_SIZE, ENEMY_SIZE)),
+                    ..default()
+                },
                 transform: Transform::from_xyz(random_x, random_y, 0.0),
-                texture: asset_server.load("sprites/ball_red_small.png"),
+                texture: asset_server.load("sprites/zombie.png"),
                 ..default()
             },
             Enemy {
