@@ -4,9 +4,6 @@ use rand::{rngs::ThreadRng, Rng};
 
 use super::dice_type::EDice;
 
-#[derive(Debug)]
-pub struct DiceServiceError();
-
 struct Dice {
     number_of_sides: u16,
     random_generator: ThreadRng,
@@ -28,12 +25,8 @@ impl Dice {
 
 pub trait DiceRoller {
     fn new() -> Self;
-    fn roll(&mut self, dice_type: EDice) -> Result<u16, DiceServiceError>;
-    fn roll_few_times(
-        &mut self,
-        dice_type: EDice,
-        number_of_rolls: u64,
-    ) -> Result<Vec<u16>, DiceServiceError>;
+    fn roll(&mut self, dice_type: EDice) -> Option<u16>;
+    fn roll_few_times(&mut self, dice_type: EDice, number_of_rolls: u64) -> Option<Vec<u16>>;
 }
 
 pub struct DiceService {
@@ -47,22 +40,18 @@ impl DiceRoller for DiceService {
         return DiceService { dice_map: dice_map };
     }
 
-    fn roll(&mut self, dice_type: EDice) -> Result<u16, DiceServiceError> {
-        let dice = self.dice_map.get_mut(&dice_type);
-        return dice.map(|dice| dice.roll()).ok_or(DiceServiceError());
+    fn roll(&mut self, dice_type: EDice) -> Option<u16> {
+        let dice = self.dice_map.get_mut(&dice_type)?;
+        return Some(dice.roll());
     }
 
-    fn roll_few_times(
-        &mut self,
-        dice_type: EDice,
-        number_of_rolls: u64,
-    ) -> Result<Vec<u16>, DiceServiceError> {
+    fn roll_few_times(&mut self, dice_type: EDice, number_of_rolls: u64) -> Option<Vec<u16>> {
         let mut result = Vec::new();
-        (1..number_of_rolls).for_each(|_| {
-            let single_roll_result = self.roll(dice_type).unwrap();
+        for _ in 1..number_of_rolls {
+            let single_roll_result = self.roll(dice_type)?;
             result.push(single_roll_result);
-        });
+        }
 
-        return Ok(result);
+        return Some(result);
     }
 }
