@@ -3,7 +3,9 @@ use std::collections::HashMap;
 
 #[derive(Debug, PartialEq, Eq, Hash, Clone, Copy)]
 pub enum EDice {
+    D4 = 4,
     D6 = 6,
+    D100 = 100,
 }
 
 struct Dice {
@@ -38,7 +40,9 @@ pub struct DiceService {
 impl DiceRoller for DiceService {
     fn new() -> DiceService {
         let mut dice_map = HashMap::<EDice, Dice>::new();
+        dice_map.insert(EDice::D4, Dice::new(4));
         dice_map.insert(EDice::D6, Dice::new(6));
+        dice_map.insert(EDice::D100, Dice::new(100));
         return DiceService { dice_map: dice_map };
     }
 
