@@ -1,6 +1,7 @@
 use ::bevy::{prelude::*, window::PrimaryWindow};
 use rand::prelude::*;
 
+mod services;
 pub const PLAYER_SIZE: f32 = 50.0;
 pub const PLAYER_SPEED: f32 = 700.0;
 pub const ENEMY_SIZE: f32 = 60.0;
@@ -185,7 +186,7 @@ pub fn enemy_movement(
     let player_transform = player_query.single();
 
     for (mut transform, enemy) in enemy_query.iter_mut() {
-        let direction = Vec3::new(0.0, 0.0,0.0);
+        let direction = Vec3::new(0.0, 0.0, 0.0);
         transform.translation += direction * ENEMY_SPEED * time.delta_seconds();
     }
 }
