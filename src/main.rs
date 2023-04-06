@@ -7,8 +7,8 @@ mod systems;
 use game::GamePlugin;
 use main_menu::MainMenuPlugin;
 
-use events::*;
 use systems::*;
+use events::*;
 
 use bevy::prelude::*;
 
