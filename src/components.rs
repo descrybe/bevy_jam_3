@@ -1,3 +1,3 @@
-pub mod enemy;
-pub mod main_camera;
-pub mod player;
+use bevy::prelude::Component;
+#[derive(Component)]
+pub struct MainCamera {}
