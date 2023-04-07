@@ -1,4 +1,4 @@
-use bevy::prelude::{Component, Vec2};
+use bevy::{prelude::Component, prelude::Vec2};
 
 #[derive(Component)]
 pub struct Enemy {

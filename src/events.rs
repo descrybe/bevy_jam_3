@@ -1,1 +1,3 @@
-pub mod game_over;
+pub struct GameOver {
+    pub score: u32,
+}

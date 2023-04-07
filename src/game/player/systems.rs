@@ -1,15 +1,13 @@
-use bevy::{
-    prelude::{AssetServer, Commands, Input, KeyCode, Query, Res, Transform, Vec2, Vec3, With},
-    sprite::{Sprite, SpriteBundle},
-    time::Time,
-    utils::default,
-    window::{PrimaryWindow, Window},
-};
+use bevy::prelude::*;
+use bevy::window::PrimaryWindow;
 
-use crate::components::player::Player;
+use super::components::Player;
 
-pub(crate) const PLAYER_SIZE: f32 = 50.0;
-const PLAYER_SPEED: f32 = 700.0;
+use crate::events::GameOver;
+use crate::game::enemy::components::*;
+use crate::game::enemy::ENEMY_SIZE;
+use crate::game::score::resources::*;
+use super::{PLAYER_SIZE, PLAYER_SPEED};
 
 pub fn spawn_player(
     mut commands: Commands,
@@ -25,7 +23,7 @@ pub fn spawn_player(
                 ..default()
             },
             transform: Transform::from_xyz(window.width() / 2.0, window.height() / 2.0, 0.0),
-            texture: asset_service.load("sprites/player_sprite.png"),
+            texture: asset_service.load("sprites/player.png"),
             ..default()
         },
         Player {},
@@ -76,5 +74,28 @@ pub fn change_player_direction(
         sprite.flip_x = true;
     } else if keyboard_input.any_pressed([KeyCode::Right, KeyCode::D]) {
         sprite.flip_x = false;
+    }
+}
+
+pub fn enemy_hit_player(
+    mut commands: Commands,
+    mut game_over_event_writer: EventWriter<GameOver>,
+    mut player_query: Query<(Entity, &Transform), With<Player>>,
+    enemy_query: Query<&Transform, With<Enemy>>,
+    score: Res<Score>,
+) {
+    if let Ok((player_entity, player_transform)) = player_query.get_single_mut() {
+        for enemy_transform in enemy_query.iter() {
+            let distance = player_transform
+                .translation
+                .distance(enemy_transform.translation);
+
+            let player_radius = PLAYER_SIZE / 2.0;
+            let enemy_radius = ENEMY_SIZE / 2.0;
+            if distance < player_radius + enemy_radius {
+                commands.entity(player_entity).despawn();
+                game_over_event_writer.send(GameOver { score: score.value });
+            }
+        }
     }
 }
