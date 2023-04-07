@@ -93,7 +93,7 @@ pub fn enemy_hit_player(
             let player_radius = PLAYER_SIZE / 2.0;
             let enemy_radius = ENEMY_SIZE / 2.0;
             if distance < player_radius + enemy_radius {
-                // commands.entity(player_entity).despawn();
+                commands.entity(player_entity).despawn();
                 game_over_event_writer.send(GameOver { score: score.value });
             }
         }

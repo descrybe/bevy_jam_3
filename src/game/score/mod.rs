@@ -5,7 +5,6 @@ mod systems;
 
 use crate::AppState;
 
-use resources::*;
 use systems::*;
 
 pub struct ScorePlugin;

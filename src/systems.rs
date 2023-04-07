@@ -31,7 +31,7 @@ pub fn camera_follow(
     camera.translation.y = player.translation.y;
 }
 
-pub fn transition_to_game_state(
+pub fn set_game_active(
     keyboard_input: Res<Input<KeyCode>>,
     app_state: Res<State<AppState>>,
     mut app_state_next_state: ResMut<NextState<AppState>>,
@@ -39,12 +39,12 @@ pub fn transition_to_game_state(
     if keyboard_input.just_pressed(KeyCode::G) {
         if app_state.0 != AppState::Game {
             app_state_next_state.set(AppState::Game);
-            println!("Entered AppState::Game");
+            println!("AppState::Game");
         }
     }
 }
 
-pub fn transition_to_main_menu_state(
+pub fn set_menu_active(
     keyboard_input: Res<Input<KeyCode>>,
     app_state: Res<State<AppState>>,
     mut app_state_next_state: ResMut<NextState<AppState>>,
@@ -52,7 +52,7 @@ pub fn transition_to_main_menu_state(
     if keyboard_input.just_pressed(KeyCode::M) {
         if app_state.0 != AppState::MainMenu {
             app_state_next_state.set(AppState::MainMenu);
-            println!("Entered AppState::MainMenu");
+            println!("AppState::MainMenu");
         }
     }
 }
