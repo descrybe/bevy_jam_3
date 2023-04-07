@@ -1,14 +1,14 @@
 pub mod enemy;
 pub mod player;
 pub mod score;
-mod systems;
+pub mod systems;
+
+use bevy::prelude::*;
 
 use enemy::EnemyPlugin;
 use player::PlayerPlugin;
 use score::ScorePlugin;
 use systems::*;
-
-use bevy::prelude::{Plugin, App, States};
 
 use crate::events::GameOver;
 use crate::AppState;
@@ -17,14 +17,14 @@ pub struct GamePlugin;
 
 impl Plugin for GamePlugin {
     fn build(&self, app: &mut App) {
-        app
-            .add_event::<GameOver>()
+        app.add_event::<GameOver>()
             .add_state::<GameSimulationState>()
+            .add_system(pause_game.in_schedule(OnEnter(AppState::MainMenu)))
             .add_plugin(EnemyPlugin)
             .add_plugin(PlayerPlugin)
-            // .add_system(pause_simulation.in_schedule(OnEnter(AppState::Game)))
-            // .add_system(toggle_simulation.run_if(in_state(AppState::Game)))
-            // .add_system(resume_simulation.in_schedule(OnExit(AppState::Game)));
+            .add_plugin(ScorePlugin)
+            .add_system(toggle_game_active_state.run_if(in_state(AppState::Game)))
+            .add_system(resume_game.in_schedule(OnExit(AppState::Game)));
     }
 }
 
