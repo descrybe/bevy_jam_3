@@ -1,5 +1,6 @@
 pub mod enemy;
 pub mod player;
+mod random_position;
 pub mod score;
 pub mod systems;
 
@@ -13,6 +14,8 @@ use systems::*;
 use crate::events::GameOver;
 use crate::AppState;
 
+use self::random_position::RandomPositionPlugin;
+
 pub struct GamePlugin;
 
 impl Plugin for GamePlugin {
@@ -23,6 +26,7 @@ impl Plugin for GamePlugin {
             .add_plugin(EnemyPlugin)
             .add_plugin(PlayerPlugin)
             .add_plugin(ScorePlugin)
+            .add_plugin(RandomPositionPlugin)
             .add_system(toggle_game_active_state.run_if(in_state(AppState::Game)))
             .add_system(resume_game.in_schedule(OnExit(AppState::Game)));
     }

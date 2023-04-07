@@ -1,6 +1,9 @@
 use bevy::{prelude::*, window::PrimaryWindow};
 use rand::prelude::random;
 
+use crate::game::random_position::screen_edge_position_generator::ScreenEdgePositionGenerator;
+use crate::game::random_position::{Point, PositionGenerator, StraightLine};
+
 use super::components::*;
 use super::{ENEMY_COUNT, ENEMY_SIZE, ENEMY_SPEED};
 
@@ -8,20 +11,27 @@ pub fn spawn_enemies(
     mut commands: Commands,
     window_query: Query<&Window, With<PrimaryWindow>>,
     asset_server: Res<AssetServer>,
+    mut position_generator: ResMut<ScreenEdgePositionGenerator>,
 ) {
     let window = window_query.get_single().unwrap();
 
-    for _ in 0..ENEMY_COUNT {
-        let random_x = random::<f32>() * window.width();
-        let random_y = random::<f32>() * window.height();
+    let constraints = &mut StraightLine {
+        first_point: Point { x: 0.0, y: 0.0 },
+        second_point: Point {
+            x: window.width(),
+            y: window.height(),
+        },
+    };
 
+    for _ in 0..ENEMY_COUNT {
+        let position = position_generator.generate(constraints).unwrap();
         commands.spawn((
             SpriteBundle {
                 sprite: Sprite {
                     custom_size: Option::Some(Vec2::new(ENEMY_SIZE, ENEMY_SIZE)),
                     ..default()
                 },
-                transform: Transform::from_xyz(random_x, random_y, 0.0),
+                transform: Transform::from_xyz(position.x, position.y, 0.0),
                 texture: asset_server.load("sprites/zombie.png"),
                 ..default()
             },
