@@ -11,7 +11,6 @@ use systems::*;
 use events::*;
 
 use bevy::prelude::*;
-
 fn main() {
     App::new()
         .add_plugins(DefaultPlugins)
