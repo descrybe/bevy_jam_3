@@ -1,3 +1,4 @@
 use bevy::prelude::Component;
+
 #[derive(Component)]
-pub struct MainCamera {}
+pub struct Player {}
