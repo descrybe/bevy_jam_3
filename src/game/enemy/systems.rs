@@ -18,6 +18,35 @@ use super::resources::EnemyWavesSpawnConfig;
 use super::{components::*, ENEMY_DAMAGE, ENEMY_HEALTH};
 use super::{ENEMY_COUNT, ENEMY_SIZE, ENEMY_SPEED};
 
+#[derive(Component, Deref, DerefMut)]
+pub struct AnimationTimer(Timer);
+
+#[derive(Component)]
+pub struct AnimationIndices {
+    first: usize,
+    last: usize,
+}
+
+pub fn animate_enemy(
+    time: Res<Time>,
+    mut query: Query<(
+        &AnimationIndices,
+        &mut AnimationTimer,
+        &mut TextureAtlasSprite,
+    )>,
+) {
+    for (indices, mut timer, mut sprite) in &mut query {
+        timer.tick(time.delta());
+        if timer.just_finished() {
+            sprite.index = if sprite.index == indices.last {
+                indices.first
+            } else {
+                sprite.index + 1
+            };
+        }
+    }
+}
+
 pub fn spawn_enemie_wave(
     mut commands: Commands,
     window_query: Query<&Window, With<PrimaryWindow>>,
@@ -25,6 +54,7 @@ pub fn spawn_enemie_wave(
     asset_server: Res<AssetServer>,
     mut position_generator: ResMut<ScreenEdgePositionGenerator>,
     mut wave_spawn_event: EventReader<WaveSpawnEvent>,
+    mut texture_atlases: ResMut<Assets<TextureAtlas>>,
 ) {
     if player_query.is_empty() {
         return;
@@ -46,22 +76,33 @@ pub fn spawn_enemie_wave(
     };
 
     let (player_entity, player_transform) = player_query.get_single().unwrap();
-
     let centrolization_vector = Vec3::from([window.width() / 2.0, window.height() / 2.0, 0.0]);
+
+    // Animation
+    let texture_handle = asset_server.load("sprites/sombiespritemap.png");
+    let texture_atlas =
+        TextureAtlas::from_grid(texture_handle, Vec2::new(100.0, 100.0), 5, 1, None, None);
+    let texture_atlas_handle = texture_atlases.add(texture_atlas);
+    //
     for _ in 0..ENEMY_COUNT {
+        // Animation
+        let animation_indices = AnimationIndices { first: 1, last: 4 };
+        let sprite_index = animation_indices.first;
+        //
         let position = position_generator.generate(constraints).unwrap();
         let base_position = Vec3::from([position.x, position.y, 0.0]);
         let translated_position = base_position
             .add(player_transform.translation)
             .sub(centrolization_vector);
         commands.spawn((
-            SpriteBundle {
-                sprite: Sprite {
+            SpriteSheetBundle {
+                texture_atlas: texture_atlas_handle.clone(),
+                sprite: TextureAtlasSprite {
+                    index: sprite_index,
                     custom_size: Option::Some(Vec2::new(ENEMY_SIZE, ENEMY_SIZE)),
                     ..default()
                 },
                 transform: Transform::from_translation(translated_position),
-                texture: asset_server.load("sprites/zombie.png"),
                 ..default()
             },
             Enemy {},
@@ -75,6 +116,9 @@ pub fn spawn_enemie_wave(
             DamageDealerComponent {
                 damage: ENEMY_DAMAGE,
             },
+            // Animation
+            animation_indices,
+            AnimationTimer(Timer::from_seconds(0.1, TimerMode::Repeating)),
         ));
     }
 }

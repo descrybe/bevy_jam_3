@@ -33,6 +33,7 @@ impl Plugin for EnemyPlugin {
                 spawn_enemie_wave,
                 kill_enemy,
                 enemy_hit_player,
+                animate_enemy,
             )
                 .in_set(OnUpdate(AppState::Game))
                 .in_set(OnUpdate(GameSimulationState::Running)),

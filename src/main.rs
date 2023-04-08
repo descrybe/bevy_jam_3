@@ -20,12 +20,12 @@ fn main() {
         .add_plugin(MainMenuPlugin)
         .add_plugin(GamePlugin)
         .add_plugin(DicePlugin)
-        .add_startup_system(spawn_camera)
         .add_event::<GameOver>()
         .add_system(set_game_active)
         .add_system(set_main_menu_active)
         .add_system(game_over_hander)
         .add_system(exit_game)
+        .add_startup_system(spawn_camera)
         .run();
 }
 
