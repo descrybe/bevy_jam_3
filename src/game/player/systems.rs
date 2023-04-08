@@ -84,6 +84,10 @@ pub fn enemy_hit_player(
     enemy_query: Query<&Transform, With<Enemy>>,
     score: Res<Score>,
 ) {
+    if enemy_query.is_empty() {
+        return;
+    }
+
     if let Ok((player_entity, player_transform)) = player_query.get_single_mut() {
         for enemy_transform in enemy_query.iter() {
             let distance = player_transform
