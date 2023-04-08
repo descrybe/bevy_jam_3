@@ -1,4 +1,5 @@
 use bevy::app::AppExit;
+use bevy::core_pipeline::clear_color::ClearColorConfig;
 use bevy::prelude::*;
 use bevy::window::PrimaryWindow;
 
@@ -14,6 +15,10 @@ pub fn spawn_camera(mut commands: Commands, window_query: Query<&Window, With<Pr
     commands.spawn((
         Camera2dBundle {
             transform: camera_position,
+            camera_2d: Camera2d {
+                clear_color: ClearColorConfig::Custom(Color::rgb(0.8, 0.4, 0.2)),
+                ..default()
+            },
             ..default()
         },
         MainCamera {},
@@ -40,23 +45,21 @@ pub fn set_game_active(
     app_state: Res<State<AppState>>,
     mut app_state_next_state: ResMut<NextState<AppState>>,
 ) {
-    if keyboard_input.just_pressed(KeyCode::G) {
+    if keyboard_input.just_pressed(KeyCode::Escape) {
         if app_state.0 != AppState::Game {
             app_state_next_state.set(AppState::Game);
-            println!("AppState::Game");
         }
     }
 }
 
-pub fn set_menu_active(
+pub fn set_main_menu_active(
     keyboard_input: Res<Input<KeyCode>>,
     app_state: Res<State<AppState>>,
     mut app_state_next_state: ResMut<NextState<AppState>>,
 ) {
-    if keyboard_input.just_pressed(KeyCode::M) {
+    if keyboard_input.just_pressed(KeyCode::Escape) {
         if app_state.0 != AppState::MainMenu {
             app_state_next_state.set(AppState::MainMenu);
-            println!("AppState::MainMenu");
         }
     }
 }
@@ -71,7 +74,7 @@ pub fn exit_game(
     keyboard_input: Res<Input<KeyCode>>,
     mut app_exit_event_writer: EventWriter<AppExit>,
 ) {
-    if keyboard_input.just_pressed(KeyCode::Q) {
+    if keyboard_input.just_pressed(KeyCode::F1) {
         app_exit_event_writer.send(AppExit);
     }
 }

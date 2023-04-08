@@ -30,6 +30,12 @@ pub fn spawn_player(
     ));
 }
 
+pub fn despawn_player(mut commands: Commands, player_query: Query<Entity, With<Player>>) {
+    if let Ok(player_entity) = player_query.get_single() {
+        commands.entity(player_entity).despawn();
+    }
+}
+
 pub fn player_movement(
     keyboard_input: Res<Input<KeyCode>>,
     mut player_query: Query<&mut Transform, With<Player>>,
@@ -97,7 +103,7 @@ pub fn enemy_hit_player(
             let player_radius = PLAYER_SIZE / 2.0;
             let enemy_radius = ENEMY_SIZE / 2.0;
             if distance < player_radius + enemy_radius {
-                commands.entity(player_entity).despawn();
+                // commands.entity(player_entity).despawn();
                 game_over_event_writer.send(GameOver { score: score.value });
             }
         }
