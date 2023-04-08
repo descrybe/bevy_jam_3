@@ -41,6 +41,5 @@ impl Plugin for EnemyPlugin {
         .insert_resource(EnemyWavesSpawnConfig {
             timer: Timer::from_seconds(WAVE_SPAWN_DELAY, TimerMode::Repeating),
         });
-        // .add_system(despawn_enemies.in_schedule(OnExit(AppState::Game)));
     }
 }

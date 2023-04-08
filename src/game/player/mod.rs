@@ -5,7 +5,7 @@ mod systems;
 use systems::*;
 
 use super::GameSimulationState;
-use crate::AppState;
+use crate::{systems::camera_follow, AppState};
 
 use bevy::prelude::*;
 
@@ -17,14 +17,16 @@ pub struct PlayerPlugin;
 
 impl Plugin for PlayerPlugin {
     fn build(&self, app: &mut App) {
-        app.add_startup_system(spawn_player).add_systems(
-            (
-                player_movement,
-                change_player_direction,
-                player_health_check_system,
-            )
-                .in_set(OnUpdate(AppState::Game))
-                .in_set(OnUpdate(GameSimulationState::Running)),
-        );
+        app.add_system(spawn_player.in_schedule(OnExit(AppState::MainMenu)))
+            .add_system(camera_follow.in_schedule(OnEnter(AppState::Game)))
+            .add_systems(
+                (
+                    player_movement,
+                    change_player_direction,
+                    player_health_check_system,
+                )
+                    .in_set(OnUpdate(AppState::Game))
+                    .in_set(OnUpdate(GameSimulationState::Running)),
+            );
     }
 }
