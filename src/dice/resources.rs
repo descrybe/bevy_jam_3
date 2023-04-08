@@ -1,3 +1,4 @@
+use bevy::prelude::Resource;
 use rand::{rngs::ThreadRng, Rng};
 use std::collections::HashMap;
 
@@ -33,9 +34,13 @@ pub trait DiceRoller {
     fn roll_few_times(&mut self, dice_type: EDice, number_of_rolls: u64) -> Option<Vec<u16>>;
 }
 
+#[derive(Resource)]
 pub struct DiceService {
     dice_map: HashMap<EDice, Dice>,
 }
+
+unsafe impl Send for DiceService {}
+unsafe impl Sync for DiceService {}
 
 impl DiceRoller for DiceService {
     fn new() -> DiceService {
