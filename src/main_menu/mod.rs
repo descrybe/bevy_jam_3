@@ -13,12 +13,12 @@ impl Plugin for MainMenuPlugin {
         app
             .add_state::<MenuState>()
             .add_system(spawn_main_menu.in_schedule(OnEnter(AppState::MainMenu)))
-            .add_system(despawn_main_menu.in_schedule(OnExit(AppState::MainMenu)))
             .add_systems(
                 (play_button_interaction, exit_button_interaction, settings_button_interaction)
-                    .in_set(OnUpdate(AppState::MainMenu)),
+                    .in_set(OnUpdate(AppState::MainMenu))
             )
-            .add_system(toggle_game_status.run_if(in_state(AppState::MainMenu)));
+            .add_system(toggle_game_status.run_if(in_state(AppState::MainMenu)))
+            .add_system(despawn_main_menu.in_schedule(OnExit(AppState::MainMenu)));
     }
 }
 

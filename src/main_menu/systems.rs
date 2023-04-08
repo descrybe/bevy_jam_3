@@ -66,7 +66,6 @@ pub fn settings_button_interaction(
         match *interaction {
             Interaction::Clicked => {
                 *color = PRESSED_BUTTON_COLOR.into();
-                // game_state.set(AppState::MainMenu);
             }
             Interaction::Hovered => {}
             Interaction::None => {
