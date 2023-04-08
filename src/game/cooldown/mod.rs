@@ -1,4 +1,4 @@
-use bevy::prelude::{App, OnUpdate, Plugin};
+use bevy::prelude::{App, IntoSystemConfigs, OnUpdate, Plugin};
 
 pub mod components;
 pub mod events;
