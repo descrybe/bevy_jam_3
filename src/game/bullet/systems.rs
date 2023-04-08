@@ -16,10 +16,6 @@ use bevy::{
 
 const BULLET_SIZE: f32 = 25.0;
 
-fn get_player_translation(player_query: Query<&Transform, With<Player>>) -> Option<Vec3> {
-    return Some(player_query.get_single().ok()?.translation);
-}
-
 fn get_nearest_enity(
     enemy_query: Query<(Entity, &Transform), With<Enemy>>,
     player_query: &Query<&Transform, With<Player>>,
