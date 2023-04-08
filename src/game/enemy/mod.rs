@@ -23,7 +23,6 @@ pub struct EnemyPlugin;
 
 impl Plugin for EnemyPlugin {
     fn build(&self, app: &mut App) {
-        // .add_system(spawn_enemies.in_schedule(OnEnter(AppState::Game)))
         app.add_systems(
             (
                 enemy_movement,
