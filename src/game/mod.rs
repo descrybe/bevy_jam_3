@@ -6,6 +6,7 @@ pub mod systems;
 pub mod target;
 pub mod bullet;
 pub mod flight;
+pub mod rotator;
 
 use bevy::prelude::*;
 
@@ -15,6 +16,7 @@ use score::ScorePlugin;
 use systems::*;
 use bullet::BulletPlugin;
 use flight::FirePlugin;
+use rotator::RotatorPlugin;
 
 use crate::events::GameOver;
 use crate::AppState;
@@ -36,6 +38,7 @@ impl Plugin for GamePlugin {
             .add_plugin(TargetPlagin)
             .add_plugin(BulletPlugin)
             .add_plugin(FirePlugin)
+            .add_plugin(RotatorPlugin)
             .add_system(toggle_game_active_state.run_if(in_state(AppState::Game)))
             .add_system(resume_game.in_schedule(OnExit(AppState::Game)));
     }
