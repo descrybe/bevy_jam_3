@@ -24,6 +24,10 @@ pub fn camera_follow(
     player_query: Query<&Transform, With<Player>>,
     mut camera_query: Query<&mut Transform, (Without<Player>, With<MainCamera>)>,
 ) {
+    if player_query.is_empty() {
+        return;
+    }
+
     let mut camera = camera_query.single_mut();
     let player = player_query.single();
 
