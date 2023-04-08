@@ -35,7 +35,7 @@ pub fn spawn_health_bar(mut commands: Commands, asset_server: Res<AssetServer>) 
                     parent
                         .spawn(NodeBundle {
                             style: Style {
-                                size: Size::width(Val::Percent(100.0)),
+                                size: Size::width(Val::Percent(70.0)), // сюда передавать Health.value/MAX_HEALTH
                                 ..default()
                             },
                             background_color: Color::rgb(1.0, 0.05, 0.0).into(),

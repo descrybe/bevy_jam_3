@@ -1,5 +1,6 @@
 pub mod experience_ui;
 pub mod player_health_bar;
+pub mod constants;
 
 use crate::AppState;
 use bevy::prelude::*;
