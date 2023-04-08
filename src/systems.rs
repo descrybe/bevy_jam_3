@@ -26,18 +26,15 @@ pub fn spawn_camera(mut commands: Commands, window_query: Query<&Window, With<Pr
 }
 
 pub fn camera_follow(
-    player_query: Query<&Transform, With<Player>>,
     mut camera_query: Query<&mut Transform, (Without<Player>, With<MainCamera>)>,
+    player_query: Query<&Transform, With<Player>>,
 ) {
-    if player_query.is_empty() {
-        return;
-    }
-
     let mut camera = camera_query.single_mut();
-    let player = player_query.single();
-
-    camera.translation.x = player.translation.x;
-    camera.translation.y = player.translation.y;
+    
+    if let Ok(player) = player_query.get_single() {
+        camera.translation.x = player.translation.x;
+        camera.translation.y = player.translation.y;
+    }
 }
 
 pub fn set_game_active(

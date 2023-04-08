@@ -16,9 +16,8 @@ impl Plugin for PlayerPlugin {
     fn build(&self, app: &mut App) {
         app
             .add_system(spawn_player.in_schedule(OnExit(AppState::MainMenu)))
-            .add_system(camera_follow.in_schedule(OnEnter(AppState::Game)))
             .add_systems(
-                (player_movement, change_player_direction, enemy_hit_player)
+                (player_movement, change_player_direction, enemy_hit_player, camera_follow)
                     .in_set(OnUpdate(AppState::Game))
                     .in_set(OnUpdate(GameSimulationState::Running)),
             );
