@@ -2,7 +2,7 @@ use bevy::prelude::*;
 
 #[derive(Resource)]
 pub struct Health {
-    pub amount: u8,
+    pub amount: u32,
 }
 
 impl Default for Health {

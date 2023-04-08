@@ -3,14 +3,15 @@ use std::ops::{Add, Sub};
 use bevy::{prelude::*, window::PrimaryWindow};
 use rand::prelude::random;
 
+use crate::game::health::components::HealthComponent;
 use crate::game::player::components::Player;
 use crate::game::random_position::screen_edge_position_generator::ScreenEdgePositionGenerator;
 use crate::game::random_position::{Point, PositionGenerator, StraightLine};
 use crate::game::target::components::{DirectionHolderComponent, TargetHolderComponent};
 
-use super::components::*;
 use super::events::WaveSpawnEvent;
 use super::resources::EnemyWavesSpawnConfig;
+use super::{components::*, ENEMY_HEALTHL};
 use super::{ENEMY_COUNT, ENEMY_SIZE, ENEMY_SPEED};
 
 pub fn spawn_enemie_wave(
@@ -66,6 +67,7 @@ pub fn spawn_enemie_wave(
             DirectionHolderComponent {
                 direction: Vec2::new(random::<f32>(), random::<f32>()).normalize(),
             },
+            HealthComponent::new(ENEMY_HEALTHL),
         ));
     }
 }
