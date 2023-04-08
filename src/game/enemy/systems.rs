@@ -12,7 +12,7 @@ use super::{ENEMY_COUNT, ENEMY_SIZE, ENEMY_SPEED};
 // TODO: Remove this
 static mut SPAWNED: bool = false;
 
-pub fn spawn_enemies(
+pub fn spawn_enemie_wave(
     mut commands: Commands,
     window_query: Query<&Window, With<PrimaryWindow>>,
     player_query: Query<Entity, With<Player>>,

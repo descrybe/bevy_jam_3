@@ -1,5 +1,4 @@
 pub mod components;
-pub mod resources;
 mod systems;
 
 use systems::*;
@@ -18,7 +17,7 @@ pub struct EnemyPlugin;
 
 impl Plugin for EnemyPlugin {
     fn build(&self, app: &mut App) {
-        app.add_system(spawn_enemies).add_systems(
+        app.add_system(spawn_enemie_wave).add_systems(
             (enemy_movement, change_enemy_direction)
                 .in_set(OnUpdate(AppState::Game))
                 .in_set(OnUpdate(GameSimulationState::Running)),
