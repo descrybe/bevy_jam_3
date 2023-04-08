@@ -10,6 +10,7 @@ pub mod score;
 pub mod systems;
 pub mod target;
 pub mod ui;
+pub mod lighting;
 
 use bevy::prelude::*;
 
@@ -20,6 +21,7 @@ use player::PlayerPlugin;
 use rotator::RotatorPlugin;
 use score::ScorePlugin;
 use ui::UIPlugin;
+use lighting::LightingPlugin;
 use systems::*;
 
 use crate::{events::GameOver, AppState};
@@ -47,6 +49,7 @@ impl Plugin for GamePlugin {
             .add_plugin(UIPlugin)
             .add_plugin(HealthPlugin)
             .add_plugin(DamagePlugin)
+            .add_plugin(LightingPlugin)
             .add_system(set_game_running.in_schedule(OnEnter(AppState::Game)))
             .add_system(toggle_game_running_state.run_if(in_state(AppState::Game)));
     }
