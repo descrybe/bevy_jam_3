@@ -14,7 +14,6 @@ pub fn damage_income_system(
     }
 
     for event in damage_event_reader.iter() {
-        println!("IN DAMAGE INCOME");
         if  !health_queary.contains(event.target)
             || !dealer_queary.contains(event.dealer) {
             continue;

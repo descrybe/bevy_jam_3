@@ -1,8 +1,9 @@
 use super::{components::Bullet, BULLET_DAMAGE};
 use crate::game::{
+    cooldown::CooldownState,
+    cooldown::{components::CooldownComponent, events::CooldownEvent},
     damage::{components::DamageDealerComponent, events::DamageEvent},
     enemy::{components::Enemy, ENEMY_SIZE},
-    flight::{components::Flight, resources::FireSpawnConfig},
     player::components::Player,
     rotator::components::Rotator,
     target::components::{DirectionHolderComponent, TargetHolderComponent},
@@ -10,10 +11,10 @@ use crate::game::{
 
 use bevy::{
     prelude::{
-        AssetServer, Commands, Entity, EventWriter, Query, Res, ResMut, Transform, Vec2, With,
+        AssetServer, Commands, Entity, EventWriter, Query, Res, Transform, Vec2, With,
     },
     sprite::{Sprite, SpriteBundle},
-    time::Time,
+    time::{Timer},
     utils::default,
 };
 
@@ -50,47 +51,60 @@ pub fn spawn_bullet(
     asset_service: Res<AssetServer>,
     enemy_query: Query<(Entity, &Transform), With<Enemy>>,
     player_query: Query<&Transform, With<Player>>,
-    mut config: ResMut<FireSpawnConfig>,
-    time: Res<Time>,
+    mut cooldown_event_writer: EventWriter<CooldownEvent>,
+    cooldown_query: Query<&CooldownComponent, With<CooldownComponent>>,
 ) {
-    config.timer.tick(time.delta());
-
-    if !config.timer.finished() {
-        return;
-    }
     if enemy_query.is_empty() {
         return;
     }
 
     let nearest_entity = get_nearest_enity(enemy_query, &player_query);
 
-    commands.spawn((
-        SpriteBundle {
-            sprite: Sprite {
-                custom_size: Option::Some(Vec2::new(BULLET_SIZE, BULLET_SIZE)),
+    let bullet_entity = commands
+        .spawn((
+            SpriteBundle {
+                sprite: Sprite {
+                    custom_size: Option::Some(Vec2::new(BULLET_SIZE, BULLET_SIZE)),
+                    ..default()
+                },
+                transform: player_query.get_single().unwrap().clone(),
+                texture: asset_service.load("sprites/projectile.png"),
                 ..default()
             },
-            transform: player_query.get_single().unwrap().clone(),
-            texture: asset_service.load("sprites/projectile.png"),
-            ..default()
-        },
-        Bullet {},
-        Flight {
-            speed: BULLET_SPEED,
-        },
-        TargetHolderComponent {
-            target_entity: nearest_entity,
-        },
-        DirectionHolderComponent {
-            direction: Vec2 { x: 0.0, y: 0.0 },
-        },
-        Rotator {
-            angle: ROTATION_SPEED,
-        },
-        DamageDealerComponent {
-            damage: BULLET_DAMAGE,
-        },
-    ));
+            Bullet {},
+            TargetHolderComponent {
+                target_entity: nearest_entity,
+            },
+            DirectionHolderComponent {
+                direction: Vec2 { x: 0.0, y: 0.0 },
+            },
+            Rotator {
+                angle: ROTATION_SPEED,
+            },
+            DamageDealerComponent {
+                damage: BULLET_DAMAGE,
+            },
+            CooldownComponent {
+                seconds: 1,
+                state: CooldownState::PAUSED,
+                timer: Timer::from_seconds(1.0, bevy::time::TimerMode::Repeating),
+            },
+        ))
+        .id();
+    if let Ok(cooldown_component) = cooldown_query.get(bullet_entity) {
+        match cooldown_component.state {
+            CooldownState::READY => {
+                cooldown_event_writer.send(CooldownEvent {
+                    entity: bullet_entity,
+                });
+            }
+            CooldownState::PAUSED => {
+                return;
+            }
+        }
+    } else {
+        return;
+    }
 }
 
 pub fn bullet_hit_enemy(
