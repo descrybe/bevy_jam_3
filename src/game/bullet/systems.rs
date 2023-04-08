@@ -8,8 +8,6 @@ use crate::game::{
     target::components::{DirectionHolderComponent, TargetHolderComponent},
 };
 
-// use std::ops::Sub;
-
 use bevy::{
     prelude::{
         AssetServer, Commands, Entity, EventWriter, Query, Res, ResMut, Transform, Vec2, With,
@@ -19,7 +17,7 @@ use bevy::{
     utils::default,
 };
 
-const BULLET_SIZE: f32 = 25.0;
+const BULLET_SIZE: f32 = 40.0;
 const ROTATION_SPEED: f32 = 720.0;
 const BULLET_SPEED: f32 = 280.0;
 
@@ -126,7 +124,7 @@ pub fn bullet_hit_enemy(
         if distance < player_radius + enemy_radius {
             commands.entity(bullet_entity).despawn();
             damage_event_writer.send(DamageEvent {
-                damage_amount: damage_dealer.damage,
+                dealer: bullet_entity,
                 target: enemy_entity,
             })
         }

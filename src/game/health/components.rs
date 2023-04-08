@@ -12,6 +12,7 @@ impl HealthComponent {
 
     pub fn apply_damage(&mut self, amount: i32) {
         self.amount -= amount;
+        println!("DAMAGE DEALT {}/{}", amount, self.amount);
     }
 
     pub fn new(amount: i32) -> Self {

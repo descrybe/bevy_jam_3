@@ -127,7 +127,7 @@ pub fn kill_enemy(
 
 pub fn enemy_hit_player(
     mut player_query: Query<(Entity, &Transform), With<Player>>,
-    enemy_query: Query<(&Transform, &DamageDealerComponent), With<Enemy>>,
+    enemy_query: Query<(Entity, &Transform, &DamageDealerComponent), With<Enemy>>,
     mut damage_event_writer: EventWriter<DamageEvent>,
 ) {
     if enemy_query.is_empty() || player_query.is_empty() {
@@ -135,7 +135,7 @@ pub fn enemy_hit_player(
     }
 
     if let Ok((player_entity, player_transform)) = player_query.get_single_mut() {
-        for (enemy_transform, damage_dealer) in enemy_query.iter() {
+        for (enemy_entity, enemy_transform, damage_dealer) in enemy_query.iter() {
             let distance = player_transform
                 .translation
                 .distance(enemy_transform.translation);
@@ -144,7 +144,7 @@ pub fn enemy_hit_player(
             let enemy_radius = ENEMY_SIZE / 2.0;
             if distance < player_radius + enemy_radius {
                 damage_event_writer.send(DamageEvent {
-                    damage_amount: damage_dealer.damage,
+                    dealer: enemy_entity,
                     target: player_entity,
                 });
             }
