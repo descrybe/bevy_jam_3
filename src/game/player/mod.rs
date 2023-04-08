@@ -18,9 +18,9 @@ pub struct PlayerPlugin;
 impl Plugin for PlayerPlugin {
     fn build(&self, app: &mut App) {
         app.add_system(spawn_player.in_schedule(OnExit(AppState::MainMenu)))
-            .add_system(camera_follow.in_schedule(OnEnter(AppState::Game)))
             .add_systems(
                 (
+                    camera_follow,
                     player_movement,
                     change_player_direction,
                     player_health_check_system,
