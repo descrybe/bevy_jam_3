@@ -5,8 +5,6 @@ use super::components::Player;
 
 use super::{PLAYER_HEALTH, PLAYER_SIZE, PLAYER_SPEED};
 use crate::events::GameOver;
-use crate::game::enemy::components::*;
-use crate::game::enemy::ENEMY_SIZE;
 use crate::game::health::components::HealthComponent;
 use crate::game::health::events::DeathEvent;
 use crate::game::score::resources::*;
@@ -77,34 +75,6 @@ pub fn change_player_direction(
         sprite.flip_x = true;
     } else if keyboard_input.any_pressed([KeyCode::Right, KeyCode::D]) {
         sprite.flip_x = false;
-    }
-}
-
-pub fn enemy_hit_player(
-    mut commands: Commands,
-    mut game_over_event_writer: EventWriter<GameOver>,
-    mut player_query: Query<(Entity, &Transform), With<Player>>,
-    enemy_query: Query<&Transform, With<Enemy>>,
-    score: Res<Score>,
-) {
-    if enemy_query.is_empty() {
-        return;
-    }
-
-    if let Ok((player_entity, player_transform)) = player_query.get_single_mut() {
-        for enemy_transform in enemy_query.iter() {
-            let distance = player_transform
-                .translation
-                .distance(enemy_transform.translation);
-
-            let player_radius = PLAYER_SIZE / 2.0;
-            let enemy_radius = ENEMY_SIZE / 2.0;
-            if distance < player_radius + enemy_radius {
-                // TODO: Remove after damage and health implementation
-                commands.entity(player_entity).despawn();
-                game_over_event_writer.send(GameOver { score: score.value });
-            }
-        }
     }
 }
 

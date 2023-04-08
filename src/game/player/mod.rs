@@ -11,7 +11,7 @@ use bevy::prelude::*;
 
 pub const PLAYER_SPEED: f32 = 500.0;
 pub const PLAYER_SIZE: f32 = 64.0;
-pub const PLAYER_HEALTH: u32 = 100;
+pub const PLAYER_HEALTH: i32 = 100;
 
 pub struct PlayerPlugin;
 
@@ -21,7 +21,6 @@ impl Plugin for PlayerPlugin {
             (
                 player_movement,
                 change_player_direction,
-                enemy_hit_player,
                 player_health_check_system,
             )
                 .in_set(OnUpdate(AppState::Game))

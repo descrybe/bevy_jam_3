@@ -9,7 +9,7 @@ use self::{
     systems::{damage_income_system, health_check_system},
 };
 
-pub const DEATH_EDGE: u32 = 0;
+pub const DEATH_EDGE: i32 = 0;
 
 pub struct HealthPlugin;
 

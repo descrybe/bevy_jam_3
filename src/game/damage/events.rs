@@ -1,6 +1,6 @@
 use bevy::prelude::Entity;
 
 pub struct DamageEvent {
-    pub damage_amount: u32,
+    pub damage_amount: i32,
     pub target: Entity,
 }
