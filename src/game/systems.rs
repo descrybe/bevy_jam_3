@@ -16,13 +16,11 @@ pub fn toggle_game_active_state(
     keyboard_input: Res<Input<KeyCode>>,
 ) {
     if keyboard_input.just_pressed(KeyCode::Escape) {
-        if simulation_state.0 == GameSimulationState::Running {
-            game_simulation_next_state.set(GameSimulationState::Paused);
-            println!("Game is Paused.");
-        }
-        if simulation_state.0 == GameSimulationState::Paused {
-            game_simulation_next_state.set(GameSimulationState::Running);
-            println!("Game is Running.");
+        let concrete_simultation_state = simulation_state.0;
+
+        match concrete_simultation_state {
+            GameSimulationState::Running => game_simulation_next_state.set(GameSimulationState::Running),
+            GameSimulationState::Paused => game_simulation_next_state.set(GameSimulationState::Running)
         }
     }
 }
