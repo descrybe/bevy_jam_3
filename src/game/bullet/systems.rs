@@ -2,19 +2,21 @@ use super::components::Bullet;
 use crate::game::{
     enemy::{components::Enemy, ENEMY_SIZE},
     flight::{components::Flight, resources::FireSpawnConfig},
-    player::components::Player, target::components::{TargetHolderComponent, DirectionHolderComponent},
+    player::components::Player, target::components::{TargetHolderComponent, DirectionHolderComponent}, rotator::components::Rotator,
 };
 
 // use std::ops::Sub;
 
 use bevy::{
-    prelude::{AssetServer, Commands, Entity, Query, Res, ResMut, Transform, Vec2, Vec3, With},
+    prelude::{AssetServer, Commands, Entity, Query, Res, ResMut, Transform, Vec2, With},
     sprite::{Sprite, SpriteBundle},
     time::Time,
     utils::default,
 };
 
 const BULLET_SIZE: f32 = 25.0;
+const ROTATION_SPEED: f32 = 720.0;
+const BULLET_SPEED: f32 = 280.0;
 
 fn get_nearest_enity(
     enemy_query: Query<(Entity, &Transform), With<Enemy>>,
@@ -67,19 +69,20 @@ pub fn spawn_bullet(
                 ..default()
             },
             transform: player_query.get_single().unwrap().clone(),
-            texture: asset_service.load("sprites/ball_blue_small.png"),
+            texture: asset_service.load("sprites/projectile.png"),
             ..default()
         },
         Bullet {},
         Flight {
-            speed: 800.0,
+            speed: BULLET_SPEED,
         },
         TargetHolderComponent {
             target_entity: nearest_entity,
         },
         DirectionHolderComponent {
             direction: Vec2 { x: 0.0, y: 0.0 },
-        }
+        },
+        Rotator {angle: ROTATION_SPEED}
     ));
 }
 

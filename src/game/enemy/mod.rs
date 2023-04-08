@@ -12,7 +12,7 @@ use super::GameSimulationState;
 
 pub const ENEMY_SIZE: f32 = 64.0;
 pub const ENEMY_SPEED: f32 = 200.0;
-pub const ENEMY_COUNT: usize = 50;
+pub const ENEMY_COUNT: usize = 5;
 
 pub struct EnemyPlugin;
 
