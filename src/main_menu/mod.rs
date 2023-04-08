@@ -10,11 +10,12 @@ pub struct MainMenuPlugin;
 
 impl Plugin for MainMenuPlugin {
     fn build(&self, app: &mut App) {
-        app.add_startup_system(main_menu)
+        app
             .add_state::<MenuState>()
-            .add_system(play_button_interaction)
             .add_system(spawn_main_menu.in_schedule(OnEnter(AppState::MainMenu)))
             .add_system(despawn_main_menu.in_schedule(OnExit(AppState::MainMenu)))
+            .add_system(play_button_interaction)
+            .add_system(exit_button_interaction)
             .add_system(toggle_game_status.run_if(in_state(AppState::MainMenu)));
     }
 }
@@ -25,8 +26,3 @@ pub enum MenuState {
     Main,
     Settings,
 }
-
-pub fn main_menu() {
-    println!("You are on the main menu.");
-}
-

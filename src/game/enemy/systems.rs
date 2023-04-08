@@ -75,11 +75,15 @@ pub fn change_enemy_direction(
 }
 
 pub fn enemy_movement(
-    mut enemy_query: Query<(&mut Transform, &Enemy)>,
+    mut enemy_query: Query<(&mut Transform, &DirectionHolderComponent), With<Enemy>>,
     time: Res<Time>,
 ) {
-    for (mut transform, enemy) in enemy_query.iter_mut() {
-        let direction = Vec3::new(enemy.direction.x, enemy.direction.y, 0.0);
+    for (mut transform, direction_holder) in enemy_query.iter_mut() {
+        let direction = Vec3::new(
+            direction_holder.direction.x,
+            direction_holder.direction.y,
+            0.0,
+        );
         transform.translation += direction * ENEMY_SPEED * time.delta_seconds();
     }
 }

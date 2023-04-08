@@ -1,3 +1,4 @@
+use bevy::app::AppExit;
 use bevy::prelude::*;
 
 use crate::main_menu::components::MainMenu;
@@ -20,6 +21,28 @@ pub fn play_button_interaction(
             Interaction::Clicked => {
                 *color = PRESSED_BUTTON_COLOR.into();
                 game_state.set(AppState::Game);
+            }
+            Interaction::Hovered => {}
+            Interaction::None => {
+                *color = NORMAL_BUTTON_COLOR.into();
+            }
+        }
+    }
+}
+
+pub fn exit_button_interaction(
+    mut app_exit_event_writer: EventWriter<AppExit>,
+    mut interaction_query: Query<
+        (&Interaction, &mut BackgroundColor),
+        (Changed<Interaction>, With<Button>),
+    >,
+) {
+    for (interaction, mut color) in &mut interaction_query {
+        *color = NORMAL_BUTTON_COLOR.into();
+
+        match *interaction {
+            Interaction::Clicked => {
+                *color = PRESSED_BUTTON_COLOR.into();
             }
             Interaction::Hovered => {}
             Interaction::None => {
@@ -108,6 +131,29 @@ pub fn main_menu_setup(commands: &mut Commands, asset_server: &Res<AssetServer>)
                         text: Text {
                             sections: vec![TextSection::new(
                                 "Play",
+                                get_text_style(asset_server, 30.0),
+                            )],
+                            alignment: TextAlignment::Center,
+                            ..default()
+                        },
+                        ..default()
+                    });
+                });
+            // Settings Button
+            parent
+                .spawn((
+                    ButtonBundle {
+                        style: DEFAULT_BUTTON_STYLE,
+                        background_color: NORMAL_BUTTON_COLOR.into(),
+                        ..default()
+                    },
+                    SettingsButton {},
+                ))
+                .with_children(|parent| {
+                    parent.spawn(TextBundle {
+                        text: Text {
+                            sections: vec![TextSection::new(
+                                "Settings",
                                 get_text_style(asset_server, 30.0),
                             )],
                             alignment: TextAlignment::Center,
