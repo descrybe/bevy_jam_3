@@ -1,20 +1,22 @@
+pub mod bullet;
 pub mod enemy;
+pub mod flight;
 pub mod player;
 mod random_position;
+pub mod rotator;
 pub mod score;
 pub mod systems;
 pub mod target;
-pub mod bullet;
-pub mod flight;
 
 use bevy::prelude::*;
 
+use bullet::BulletPlugin;
 use enemy::EnemyPlugin;
+use flight::FirePlugin;
 use player::PlayerPlugin;
+use rotator::RotatorPlugin;
 use score::ScorePlugin;
 use systems::*;
-use bullet::BulletPlugin;
-use flight::FirePlugin;
 
 use crate::{events::GameOver, AppState};
 
@@ -35,8 +37,9 @@ impl Plugin for GamePlugin {
             .add_plugin(TargetPlugin)
             .add_plugin(BulletPlugin)
             .add_plugin(FirePlugin)
+            .add_plugin(RotatorPlugin)
             .add_system(set_game_running.in_schedule(OnEnter(AppState::Game)))
-            .add_system(toggle_game_running_state.run_if(in_state(AppState::Game)));
+            .add_system(toggle_game_running_state.run_if(in_state(AppState::Game)));;
     }
 }
 

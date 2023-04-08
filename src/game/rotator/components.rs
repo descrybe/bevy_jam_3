@@ -1,4 +1,4 @@
 use bevy::prelude::Component;
 
 #[derive(Component)]
-pub struct Bullet {}
+pub struct Rotator {pub angle: f32}

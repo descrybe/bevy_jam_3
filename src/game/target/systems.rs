@@ -1,6 +1,6 @@
 use std::ops::Sub;
 
-use bevy::{prelude::{Query, Transform, Vec2, With, Commands, Entity}};
+use bevy::prelude::{Commands, Entity, Query, Transform, Vec2, With};
 
 use super::components::{DirectionHolderComponent, TargetHolderComponent};
 
