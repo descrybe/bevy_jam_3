@@ -1,6 +1,4 @@
-use bevy::{prelude::Component, prelude::Vec2};
+use bevy::prelude::Component;
 
 #[derive(Component)]
-pub struct Enemy {
-    pub direction: Vec2,
-}
+pub struct Enemy;
