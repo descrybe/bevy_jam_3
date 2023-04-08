@@ -3,14 +3,19 @@ use std::ops::{Add, Sub};
 use bevy::{prelude::*, window::PrimaryWindow};
 use rand::prelude::random;
 
+use crate::game::damage::components::DamageDealerComponent;
+use crate::game::damage::events::DamageEvent;
+use crate::game::health::components::HealthComponent;
+use crate::game::health::events::DeathEvent;
 use crate::game::player::components::Player;
+use crate::game::player::PLAYER_SIZE;
 use crate::game::random_position::screen_edge_position_generator::ScreenEdgePositionGenerator;
 use crate::game::random_position::{Point, PositionGenerator, StraightLine};
 use crate::game::target::components::{DirectionHolderComponent, TargetHolderComponent};
 
-use super::components::*;
 use super::events::WaveSpawnEvent;
 use super::resources::EnemyWavesSpawnConfig;
+use super::{components::*, ENEMY_DAMAGE, ENEMY_HEALTH};
 use super::{ENEMY_COUNT, ENEMY_SIZE, ENEMY_SPEED};
 
 pub fn spawn_enemie_wave(
@@ -66,6 +71,10 @@ pub fn spawn_enemie_wave(
             DirectionHolderComponent {
                 direction: Vec2::new(random::<f32>(), random::<f32>()).normalize(),
             },
+            HealthComponent::new(ENEMY_HEALTH),
+            DamageDealerComponent {
+                damage: ENEMY_DAMAGE,
+            },
         ));
     }
 }
@@ -95,7 +104,50 @@ pub fn wave_timer_tracking_system(
         return;
     }
 
-    println!("Zombies approaching");
-
     wave_event.send(WaveSpawnEvent {});
+}
+
+pub fn kill_enemy(
+    mut commands: Commands,
+    enemy_query: Query<Entity, With<Enemy>>,
+    mut death_event_reader: EventReader<DeathEvent>,
+) {
+    if death_event_reader.is_empty() {
+        return;
+    }
+
+    for event in death_event_reader.iter() {
+        if !enemy_query.contains(event.entity) {
+            continue;
+        }
+
+        commands.entity(event.entity).despawn();
+    }
+}
+
+pub fn enemy_hit_player(
+    mut player_query: Query<(Entity, &Transform), With<Player>>,
+    enemy_query: Query<(&Transform, &DamageDealerComponent), With<Enemy>>,
+    mut damage_event_writer: EventWriter<DamageEvent>,
+) {
+    if enemy_query.is_empty() || player_query.is_empty() {
+        return;
+    }
+
+    if let Ok((player_entity, player_transform)) = player_query.get_single_mut() {
+        for (enemy_transform, damage_dealer) in enemy_query.iter() {
+            let distance = player_transform
+                .translation
+                .distance(enemy_transform.translation);
+
+            let player_radius = PLAYER_SIZE / 2.0;
+            let enemy_radius = ENEMY_SIZE / 2.0;
+            if distance < player_radius + enemy_radius {
+                damage_event_writer.send(DamageEvent {
+                    damage_amount: damage_dealer.damage,
+                    target: player_entity,
+                });
+            }
+        }
+    }
 }
