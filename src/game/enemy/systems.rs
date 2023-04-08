@@ -3,6 +3,7 @@ use std::ops::{Add, Sub};
 use bevy::{prelude::*, window::PrimaryWindow};
 use rand::prelude::random;
 
+use crate::game::collision::components::{Collidable, CollisionData};
 use crate::game::damage::components::DamageDealerComponent;
 use crate::game::damage::events::DamageEvent;
 use crate::game::health::components::HealthComponent;
@@ -74,6 +75,17 @@ pub fn spawn_enemie_wave(
             HealthComponent::new(ENEMY_HEALTH),
             DamageDealerComponent {
                 damage: ENEMY_DAMAGE,
+            },
+            Collidable {
+                size: Vec2 {
+                    x: ENEMY_SIZE,
+                    y: ENEMY_SIZE,
+                },
+                is_solid: false,
+                collision: CollisionData {
+                    is_collided: false,
+                    collision_side: Vec::new(),
+                },
             },
         ));
     }

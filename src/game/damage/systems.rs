@@ -1,8 +1,8 @@
-use bevy::prelude::{Query, With, EventReader};
+use bevy::prelude::{EventReader, Query, With};
 
 use crate::game::health::components::HealthComponent;
 
-use super::{events::DamageEvent, components::DamageDealerComponent};
+use super::{components::DamageDealerComponent, events::DamageEvent};
 
 pub fn damage_income_system(
     mut health_queary: Query<&mut HealthComponent, With<HealthComponent>>,
@@ -14,9 +14,7 @@ pub fn damage_income_system(
     }
 
     for event in damage_event_reader.iter() {
-        println!("IN DAMAGE INCOME");
-        if  !health_queary.contains(event.target)
-            || !dealer_queary.contains(event.dealer) {
+        if !health_queary.contains(event.target) || !dealer_queary.contains(event.dealer) {
             continue;
         }
         let dealer = dealer_queary.get(event.dealer).unwrap();

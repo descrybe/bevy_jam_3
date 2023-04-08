@@ -1,16 +1,22 @@
 use super::{components::Bullet, BULLET_DAMAGE};
 use crate::game::{
+    collision::{
+        components::{Collidable, CollisionData},
+        events::CollisionEvent,
+    },
     damage::{components::DamageDealerComponent, events::DamageEvent},
     enemy::{components::Enemy, ENEMY_SIZE},
     flight::{components::Flight, resources::FireSpawnConfig},
-    player::components::Player,
+    health::components::HealthComponent,
+    player::{components::Player, resources::Health},
     rotator::components::Rotator,
     target::components::{DirectionHolderComponent, TargetHolderComponent},
 };
 
 use bevy::{
     prelude::{
-        AssetServer, Commands, Entity, EventWriter, Query, Res, ResMut, Transform, Vec2, With,
+        AssetServer, Commands, Entity, EventReader, EventWriter, Query, Res, ResMut, Transform,
+        Vec2, With,
     },
     sprite::{Sprite, SpriteBundle},
     time::Time,
@@ -90,43 +96,41 @@ pub fn spawn_bullet(
         DamageDealerComponent {
             damage: BULLET_DAMAGE,
         },
+        Collidable {
+            size: Vec2 {
+                x: BULLET_SIZE,
+                y: BULLET_SIZE,
+            },
+            is_solid: false,
+            collision: CollisionData {
+                is_collided: false,
+                collision_side: Vec::new(),
+            },
+        },
     ));
 }
 
-pub fn bullet_hit_enemy(
+pub fn bullet_collision_handler(
     mut commands: Commands,
-    bullet_query: Query<
-        (
-            Entity,
-            &TargetHolderComponent,
-            &Transform,
-            &DamageDealerComponent,
-        ),
-        With<Bullet>,
-    >,
-    enemy_query: Query<(Entity, &Transform), With<Enemy>>,
+    mut collision_event_reader: EventReader<CollisionEvent>,
     mut damage_event_writer: EventWriter<DamageEvent>,
+    enemy_query: Query<&HealthComponent, With<Enemy>>,
+    bullet_query: Query<&DamageDealerComponent, With<Bullet>>,
 ) {
-    for (bullet_entity, bullet_target, bullet_transform, damage_dealer) in bullet_query.iter() {
-        if !enemy_query.contains(bullet_target.target_entity) {
-            commands.entity(bullet_entity).despawn();
+    if collision_event_reader.is_empty() {
+        return;
+    }
+
+    for event in collision_event_reader.iter() {
+        if !bullet_query.contains(*event.first()) || !enemy_query.contains(*event.second()) {
             continue;
         }
 
-        let (enemy_entity, nearest_enemy_transform) =
-            enemy_query.get(bullet_target.target_entity).unwrap();
-        let distance = nearest_enemy_transform
-            .translation
-            .distance(bullet_transform.translation);
-        let player_radius = BULLET_SIZE / 2.0;
-        let enemy_radius = ENEMY_SIZE / 2.0;
+        damage_event_writer.send(DamageEvent {
+            dealer: *event.first(),
+            target: *event.second(),
+        });
 
-        if distance < player_radius + enemy_radius {
-            commands.entity(bullet_entity).despawn();
-            damage_event_writer.send(DamageEvent {
-                dealer: bullet_entity,
-                target: enemy_entity,
-            })
-        }
+        commands.entity(*event.first()).despawn();
     }
 }

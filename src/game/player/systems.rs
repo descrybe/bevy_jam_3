@@ -5,6 +5,7 @@ use super::components::Player;
 
 use super::{PLAYER_HEALTH, PLAYER_SIZE, PLAYER_SPEED};
 use crate::events::GameOver;
+use crate::game::collision::components::{Collidable, CollisionData};
 use crate::game::health::components::HealthComponent;
 use crate::game::health::events::DeathEvent;
 use crate::game::score::resources::*;
@@ -28,6 +29,17 @@ pub fn spawn_player(
         },
         Player {},
         HealthComponent::new(PLAYER_HEALTH),
+        Collidable {
+            size: Vec2 {
+                x: PLAYER_SIZE,
+                y: PLAYER_SIZE,
+            },
+            is_solid: false,
+            collision: CollisionData {
+                is_collided: false,
+                collision_side: Vec::new(),
+            },
+        },
     ));
 }
 
