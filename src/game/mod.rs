@@ -1,4 +1,6 @@
+pub mod bullet;
 pub mod enemy;
+pub mod flight;
 pub mod player;
 mod random_position;
 pub mod score;
@@ -7,7 +9,9 @@ pub mod target;
 
 use bevy::prelude::*;
 
+use bullet::BulletPlugin;
 use enemy::EnemyPlugin;
+use flight::FirePlugin;
 use player::PlayerPlugin;
 use score::ScorePlugin;
 use systems::*;
@@ -30,6 +34,8 @@ impl Plugin for GamePlugin {
             .add_plugin(ScorePlugin)
             .add_plugin(RandomPositionPlugin)
             .add_plugin(TargetPlagin)
+            .add_plugin(BulletPlugin)
+            .add_plugin(FirePlugin)
             .add_system(toggle_game_active_state.run_if(in_state(AppState::Game)))
             .add_system(resume_game.in_schedule(OnExit(AppState::Game)));
     }
