@@ -41,23 +41,21 @@ pub fn set_game_active(
     app_state: Res<State<AppState>>,
     mut app_state_next_state: ResMut<NextState<AppState>>,
 ) {
-    if keyboard_input.just_pressed(KeyCode::G) {
+    if keyboard_input.just_pressed(KeyCode::Escape) {
         if app_state.0 != AppState::Game {
             app_state_next_state.set(AppState::Game);
-            println!("AppState::Game");
         }
     }
 }
 
-pub fn set_menu_active(
+pub fn set_main_menu_active(
     keyboard_input: Res<Input<KeyCode>>,
     app_state: Res<State<AppState>>,
     mut app_state_next_state: ResMut<NextState<AppState>>,
 ) {
-    if keyboard_input.just_pressed(KeyCode::M) {
+    if keyboard_input.just_pressed(KeyCode::Escape) {
         if app_state.0 != AppState::MainMenu {
             app_state_next_state.set(AppState::MainMenu);
-            println!("AppState::MainMenu");
         }
     }
 }

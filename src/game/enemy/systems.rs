@@ -40,12 +40,8 @@ pub fn change_enemy_direction(mut enemy_query: Query<(&mut Sprite, &Transform, &
 
 pub fn enemy_movement(
     mut enemy_query: Query<(&mut Transform, &Enemy)>,
-    // mut enemy_query: Query<(&mut Transform, &Enemy), Without<Player>>,
-    // player_query: Query<&Transform, With<Player>>,
     time: Res<Time>,
 ) {
-    // let player_transform = player_query.single();
-
     for (mut transform, enemy) in enemy_query.iter_mut() {
         let direction = Vec3::new(enemy.direction.x, enemy.direction.y, 0.0);
         transform.translation += direction * ENEMY_SPEED * time.delta_seconds();
