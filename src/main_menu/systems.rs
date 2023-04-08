@@ -11,7 +11,7 @@ pub fn play_button_interaction(
     mut game_state: ResMut<NextState<AppState>>,
     mut interaction_query: Query<
         (&Interaction, &mut BackgroundColor),
-        (Changed<Interaction>, With<Button>),
+        (Changed<Interaction>, With<PlayButton>),
     >,
 ) {
     for (interaction, mut color) in &mut interaction_query {
@@ -34,7 +34,7 @@ pub fn exit_button_interaction(
     mut app_exit_event_writer: EventWriter<AppExit>,
     mut interaction_query: Query<
         (&Interaction, &mut BackgroundColor),
-        (Changed<Interaction>, With<Button>),
+        (Changed<Interaction>, With<ExitButton>),
     >,
 ) {
     for (interaction, mut color) in &mut interaction_query {
@@ -43,6 +43,30 @@ pub fn exit_button_interaction(
         match *interaction {
             Interaction::Clicked => {
                 *color = PRESSED_BUTTON_COLOR.into();
+                app_exit_event_writer.send(AppExit);
+            }
+            Interaction::Hovered => {}
+            Interaction::None => {
+                *color = NORMAL_BUTTON_COLOR.into();
+            }
+        }
+    }
+}
+
+pub fn settings_button_interaction(
+    mut game_state: ResMut<NextState<AppState>>,
+    mut interaction_query: Query<
+        (&Interaction, &mut BackgroundColor),
+        (Changed<Interaction>, With<SettingsButton>),
+    >,
+) {
+    for (interaction, mut color) in &mut interaction_query {
+        *color = NORMAL_BUTTON_COLOR.into();
+
+        match *interaction {
+            Interaction::Clicked => {
+                *color = PRESSED_BUTTON_COLOR.into();
+                // game_state.set(AppState::MainMenu);
             }
             Interaction::Hovered => {}
             Interaction::None => {
@@ -170,7 +194,7 @@ pub fn main_menu_setup(commands: &mut Commands, asset_server: &Res<AssetServer>)
                         background_color: NORMAL_BUTTON_COLOR.into(),
                         ..default()
                     },
-                    QuitButton {},
+                    ExitButton {},
                 ))
                 .with_children(|parent| {
                     parent.spawn(TextBundle {
