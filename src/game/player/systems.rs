@@ -3,10 +3,10 @@ use bevy::window::PrimaryWindow;
 
 use super::components::Player;
 
-use super::{PLAYER_SIZE, PLAYER_SPEED};
+use super::{PLAYER_HEALTH, PLAYER_SIZE, PLAYER_SPEED};
 use crate::events::GameOver;
-use crate::game::enemy::components::*;
-use crate::game::enemy::ENEMY_SIZE;
+use crate::game::health::components::HealthComponent;
+use crate::game::health::events::DeathEvent;
 use crate::game::score::resources::*;
 
 pub fn spawn_player(
@@ -27,6 +27,7 @@ pub fn spawn_player(
             ..default()
         },
         Player {},
+        HealthComponent::new(PLAYER_HEALTH),
     ));
 }
 
@@ -83,29 +84,23 @@ pub fn change_player_direction(
     }
 }
 
-pub fn enemy_hit_player(
+pub fn player_health_check_system(
     mut commands: Commands,
+    mut event_reader: EventReader<DeathEvent>,
     mut game_over_event_writer: EventWriter<GameOver>,
-    mut player_query: Query<(Entity, &Transform), With<Player>>,
-    enemy_query: Query<&Transform, With<Enemy>>,
+    player_query: Query<Entity, With<Player>>,
     score: Res<Score>,
 ) {
-    if enemy_query.is_empty() {
+    if event_reader.is_empty() {
         return;
     }
 
-    if let Ok((player_entity, player_transform)) = player_query.get_single_mut() {
-        for enemy_transform in enemy_query.iter() {
-            let distance = player_transform
-                .translation
-                .distance(enemy_transform.translation);
-
-            let player_radius = PLAYER_SIZE / 2.0;
-            let enemy_radius = ENEMY_SIZE / 2.0;
-            if distance < player_radius + enemy_radius {
-                // commands.entity(player_entity).despawn();
-                game_over_event_writer.send(GameOver { score: score.value });
-            }
+    for event in event_reader.iter() {
+        if !player_query.contains(event.entity) {
+            continue;
         }
+
+        game_over_event_writer.send(GameOver { score: score.value });
+        commands.entity(event.entity).despawn_recursive();
     }
 }

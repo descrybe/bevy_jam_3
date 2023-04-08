@@ -1,6 +1,8 @@
 pub mod bullet;
+pub mod damage;
 pub mod enemy;
 pub mod flight;
+pub mod health;
 pub mod player;
 mod random_position;
 pub mod rotator;
@@ -20,6 +22,8 @@ use systems::*;
 
 use crate::{events::GameOver, AppState};
 
+use self::damage::DamagePlugin;
+use self::health::HealthPlugin;
 use self::random_position::RandomPositionPlugin;
 use self::target::TargetPlugin;
 
@@ -38,8 +42,10 @@ impl Plugin for GamePlugin {
             .add_plugin(BulletPlugin)
             .add_plugin(FirePlugin)
             .add_plugin(RotatorPlugin)
+            .add_plugin(HealthPlugin)
+            .add_plugin(DamagePlugin)
             .add_system(set_game_running.in_schedule(OnEnter(AppState::Game)))
-            .add_system(toggle_game_running_state.run_if(in_state(AppState::Game)));;
+            .add_system(toggle_game_running_state.run_if(in_state(AppState::Game)));
     }
 }
 

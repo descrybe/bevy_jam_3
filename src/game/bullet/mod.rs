@@ -8,6 +8,8 @@ use crate::AppState;
 
 use bevy::prelude::*;
 
+pub const BULLET_DAMAGE: i32 = 20;
+
 pub struct BulletPlugin;
 
 impl Plugin for BulletPlugin {
