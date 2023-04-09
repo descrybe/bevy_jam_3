@@ -4,7 +4,7 @@ use bevy::{prelude::*, window::PrimaryWindow};
 use rand::prelude::random;
 
 use crate::assets_cache::resources::AssetsCache;
-use crate::game::collision::components::{Collidable, CollisionData};
+use crate::game::collision::components::{Collidable, CollisionData, Solid};
 use crate::game::damage::components::DamageDealerComponent;
 use crate::game::health::components::HealthComponent;
 use crate::game::health::events::DeathEvent;
@@ -122,22 +122,36 @@ pub fn spawn_enemie_wave(
             // Animation
             animation_indices,
             AnimationTimer(Timer::from_seconds(0.1, TimerMode::Repeating)),
+            Collidable {
+                size: Vec2 {
+                    x: ENEMY_SIZE * 0.6,
+                    y: ENEMY_SIZE * 0.6,
+                },
+                collision: CollisionData {
+                    is_collided: false,
+                    collision_side: Vec::new(),
+                },
+            },
+            Solid {
+                target_point: translated_position,
+                collision_impact: 0.4,
+            },
         ));
     }
 }
 
 pub fn enemy_movement(
-    mut enemy_query: Query<(&mut Transform, &DirectionHolderComponent), With<Enemy>>,
+    mut enemy_query: Query<(&Transform, &DirectionHolderComponent, &mut Solid), With<Enemy>>,
     time: Res<Time>,
 ) {
-    for (mut transform, direction_holder) in enemy_query.iter_mut() {
+    for (transform, direction_holder, mut solidity) in enemy_query.iter_mut() {
         let direction = Vec3::new(
             direction_holder.direction.x,
             direction_holder.direction.y,
             0.0,
         );
-
-        transform.translation += direction * ENEMY_SPEED * time.delta_seconds();
+        solidity.target_point =
+            transform.translation + direction * ENEMY_SPEED * time.delta_seconds();
     }
 }
 

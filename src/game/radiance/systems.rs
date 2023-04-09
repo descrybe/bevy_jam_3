@@ -1,7 +1,7 @@
 use super::{
-    components::{Bullet, BulletAbility},
-    events::LaunchBulletEvent,
-    BULLET_DAMAGE, BULLET_SIZE, BULLET_SPEED, COOLDOWN_DELAY, ROTATION_SPEED,
+    components::{Radiance, RadianceAbility},
+    events::LaunchRadianceEvent,
+    COOLDOWN_DELAY, RADIANCE_DAMAGE, RADIANCE_SIZE,
 };
 use crate::{
     assets_cache::resources::AssetsCache,
@@ -13,9 +13,8 @@ use crate::{
         collision::components::{Collidable, CollisionData},
         damage::components::{DamageDealerComponent, SelfDestructable},
         enemy::components::Enemy,
-        flight::components::Flight,
         player::components::Player,
-        rotator::components::Rotator,
+        player_binder::components::PlayerBinder,
         target::components::{DirectionHolderComponent, TargetHolderComponent},
     },
 };
@@ -59,14 +58,14 @@ pub fn generate_ability_entity(mut commands: Commands, player_query: Query<Entit
         },
         Cooldown::new(COOLDOWN_DELAY),
         PeriodicAbility {},
-        BulletAbility {},
+        RadianceAbility {},
     ));
 }
 
 pub fn trigger_bullet_ability(
     mut event_reader: EventReader<TriggerAbilityEvent>,
-    mut event_writer: EventWriter<LaunchBulletEvent>,
-    ability_query: Query<&AbilityComponent, With<BulletAbility>>,
+    mut event_writer: EventWriter<LaunchRadianceEvent>,
+    ability_query: Query<&AbilityComponent, With<RadianceAbility>>,
     common_query: Query<&Transform>,
     enemy_query: Query<(Entity, &Transform), With<Enemy>>,
 ) {
@@ -84,20 +83,22 @@ pub fn trigger_bullet_ability(
         let owner_transform = common_query.get(ability_options.owner).unwrap();
         let target = get_nearest_entity(&enemy_query, owner_transform);
 
-        event_writer.send(LaunchBulletEvent {
+        event_writer.send(LaunchRadianceEvent {
             owner: ability_options.owner,
             target: target,
         })
     }
 }
 
-pub fn spawn_bullet(
+pub fn spawn_radiance(
     mut commands: Commands,
     asset_service: Res<AssetsCache>,
     common_query: Query<&Transform>,
-    mut event_reader: EventReader<LaunchBulletEvent>,
+    mut event_reader: EventReader<LaunchRadianceEvent>,
+    radiance_query: Query<&Transform, With<Radiance>>,
+    radiance_ability_query: Query<&Transform, With<RadianceAbility>>,
 ) {
-    if event_reader.is_empty() {
+    if event_reader.is_empty() || !radiance_query.is_empty() || !radiance_ability_query.is_empty() {
         return;
     }
 
@@ -106,37 +107,34 @@ pub fn spawn_bullet(
             return;
         }
         let source = common_query.get(event.owner).unwrap();
+        let mut source_copy = source.clone();
+        source_copy.translation.z -= 1.0;
         commands.spawn((
             SpriteBundle {
                 sprite: Sprite {
-                    custom_size: Option::Some(Vec2::new(BULLET_SIZE, BULLET_SIZE)),
+                    custom_size: Option::Some(Vec2::new(RADIANCE_SIZE, RADIANCE_SIZE)),
                     ..default()
                 },
-                transform: source.clone(),
+                transform: source_copy,
                 texture: asset_service.sprites.projectiles.bottle.clone(),
                 ..default()
             },
-            Bullet {},
-            Flight {
-                speed: BULLET_SPEED,
-            },
+            Radiance {},
+            PlayerBinder {},
             TargetHolderComponent {
                 target_entity: event.target,
             },
             DirectionHolderComponent {
                 direction: Vec2 { x: 0.0, y: 0.0 },
             },
-            Rotator {
-                angle: ROTATION_SPEED,
-            },
             DamageDealerComponent {
-                damage: BULLET_DAMAGE,
+                damage: RADIANCE_DAMAGE,
             },
             SelfDestructable::new(0.1),
             Collidable {
                 size: Vec2 {
-                    x: BULLET_SIZE,
-                    y: BULLET_SIZE,
+                    x: RADIANCE_SIZE,
+                    y: RADIANCE_SIZE,
                 },
                 collision: CollisionData {
                     is_collided: false,

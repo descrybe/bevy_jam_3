@@ -69,7 +69,6 @@ pub fn spawn_circle(
                 x: CIRCLE_SIZE,
                 y: CIRCLE_SIZE,
             },
-            is_solid: false,
             collision: CollisionData {
                 is_collided: false,
                 collision_side: Vec::new(),

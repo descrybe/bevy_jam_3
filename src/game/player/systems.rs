@@ -6,7 +6,7 @@ use super::components::Player;
 use super::{PLAYER_HEALTH, PLAYER_SIZE, PLAYER_SPEED};
 use crate::assets_cache::resources::AssetsCache;
 use crate::events::GameOver;
-use crate::game::collision::components::{Collidable, CollisionData};
+use crate::game::collision::components::{Collidable, CollisionData, Solid};
 use crate::game::health::components::HealthComponent;
 use crate::game::health::events::DeathEvent;
 use crate::game::score::resources::*;
@@ -18,13 +18,14 @@ pub fn spawn_player(
 ) {
     let window = window_query.get_single().unwrap();
 
+    let transformation = Transform::from_xyz(window.width() / 2.0, window.height() / 2.0, 0.0);
     commands.spawn((
         SpriteBundle {
             sprite: Sprite {
                 custom_size: Option::Some(Vec2::new(PLAYER_SIZE, PLAYER_SIZE)),
                 ..default()
             },
-            transform: Transform::from_xyz(window.width() / 2.0, window.height() / 2.0, 0.0),
+            transform: transformation,
             texture: asset_service.sprites.characters.wizzard.clone(),
             ..default()
         },
@@ -36,14 +37,17 @@ pub fn spawn_player(
         HealthComponent::new(PLAYER_HEALTH),
         Collidable {
             size: Vec2 {
-                x: PLAYER_SIZE,
-                y: PLAYER_SIZE,
+                x: PLAYER_SIZE * 0.9,
+                y: PLAYER_SIZE * 0.9,
             },
-            is_solid: false,
             collision: CollisionData {
                 is_collided: false,
                 collision_side: Vec::new(),
             },
+        },
+        Solid {
+            target_point: transformation.translation,
+            collision_impact: 0.1,
         },
     ));
 }
@@ -56,10 +60,10 @@ pub fn despawn_player(mut commands: Commands, player_query: Query<Entity, With<P
 
 pub fn player_movement(
     keyboard_input: Res<Input<KeyCode>>,
-    mut player_query: Query<&mut Transform, With<Player>>,
+    mut player_query: Query<(&Transform, &mut Solid), With<Player>>,
     time: Res<Time>,
 ) {
-    if let Ok(mut transform) = player_query.get_single_mut() {
+    if let Ok((transform, mut solidity)) = player_query.get_single_mut() {
         let mut direction = Vec3::ZERO;
 
         let left_direction = keyboard_input.any_pressed([KeyCode::Left, KeyCode::A]);
@@ -84,7 +88,8 @@ pub fn player_movement(
             direction = direction.normalize();
         }
 
-        transform.translation += direction * PLAYER_SPEED * time.delta_seconds();
+        solidity.target_point =
+            transform.translation + direction * PLAYER_SPEED * time.delta_seconds();
     }
 }
 
