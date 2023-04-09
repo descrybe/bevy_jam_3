@@ -16,9 +16,10 @@ pub fn spawn_camera(mut commands: Commands, window_query: Query<&Window, With<Pr
         Camera2dBundle {
             transform: camera_position,
             camera_2d: Camera2d {
-                clear_color: ClearColorConfig::Custom(Color::rgb(0.8, 0.4, 0.2)),
+                clear_color: ClearColorConfig::Custom(Color::rgb(0.4, 0.5, 0.3)),
                 ..default()
             },
+            tonemapping: bevy::core_pipeline::tonemapping::Tonemapping::AcesFitted,
             ..default()
         },
         MainCamera {},

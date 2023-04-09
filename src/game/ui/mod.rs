@@ -1,17 +1,38 @@
-pub mod experience_ui;
-pub mod player_health_bar;
-pub mod constants;
+mod constants;
+mod dices_preview;
+mod experience_ui;
+mod pause_menu;
+mod player_health_bar;
+mod systems;
 
+use super::GameSimulationState;
 use crate::AppState;
 use bevy::prelude::*;
+use dices_preview::*;
 use experience_ui::*;
+use pause_menu::*;
 use player_health_bar::*;
+use systems::*;
 
 pub struct UIPlugin;
 
 impl Plugin for UIPlugin {
     fn build(&self, app: &mut App) {
-        app.add_system(spawn_health_bar.in_schedule(OnEnter(AppState::Game)))
-            .add_system(spawn_exp_bar.in_schedule(OnEnter(AppState::Game)));
+        app
+            .add_system(spawn_health_bar.in_schedule(OnExit(AppState::MainMenu)))
+            .add_system(spawn_exp_bar.in_schedule(OnExit(AppState::MainMenu)))
+            .add_system(spawn_preview_dices.in_schedule(OnExit(AppState::MainMenu)))
+            // .add_plugin(PauseMenuPlugin)
+            .add_systems(
+                (
+                    stick_health_bar_to_player,
+                    stick_exp_bar,
+                    stick_first_dice,
+                    stick_second_dice,
+                    // setup_game_bg,
+                )
+                    .in_set(OnUpdate(AppState::Game))
+                    .in_set(OnUpdate(GameSimulationState::Running)),
+            );
     }
 }

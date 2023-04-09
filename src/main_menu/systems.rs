@@ -213,3 +213,43 @@ pub fn main_menu_setup(commands: &mut Commands, asset_server: &Res<AssetServer>)
 
     return main_menu_entity;
 }
+
+#[derive(Component)]
+pub struct Max;
+
+pub fn setup_bg(
+    mut commands: Commands,
+    asset_server: Res<AssetServer>,
+) {
+    let texture_handle = asset_server.load("sprites/menu_background.png");
+
+    commands.spawn(
+        (SpriteBundle {
+            texture: texture_handle.into(),
+            ..Default::default()
+        },
+        Max {},
+    ));
+}
+
+// TODO: change functions names, fix coordinates
+// fix game crash
+pub fn move_max(
+    keyboard_input: Res<Input<KeyCode>>,
+    mut max_positions: Query<&mut Transform, With<Max>>,
+) {
+    for mut transform in max_positions.iter_mut() {
+        if keyboard_input.pressed(KeyCode::Left) {
+            transform.translation.x -= 1.0;
+        }
+        if keyboard_input.pressed(KeyCode::Right) {
+            transform.translation.x += 1.0;
+        }
+        if keyboard_input.pressed(KeyCode::Down) {
+            transform.translation.y -= 1.0;
+        }
+        if keyboard_input.pressed(KeyCode::Up) {
+            transform.translation.y += 1.0;
+        }
+    }
+}
