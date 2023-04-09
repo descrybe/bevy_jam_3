@@ -30,8 +30,8 @@ pub fn spawn_player(
             ..default()
         },
         Player {
-            exp: 0,
-            lvl: 1,
+            experience: 0,
+            level: 1,
             health: PLAYER_HEALTH,
         },
         HealthComponent::new(PLAYER_HEALTH),

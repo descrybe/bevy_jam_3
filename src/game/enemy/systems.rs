@@ -173,6 +173,7 @@ pub fn kill_enemy(
     mut commands: Commands,
     enemy_query: Query<Entity, With<Enemy>>,
     mut death_event_reader: EventReader<DeathEvent>,
+    mut player_query: Query<&mut Player>,
 ) {
     if death_event_reader.is_empty() {
         return;
@@ -181,6 +182,14 @@ pub fn kill_enemy(
     for event in death_event_reader.iter() {
         if !enemy_query.contains(event.entity) {
             continue;
+        }
+
+        if let Ok(mut player) = player_query.get_single_mut() {
+            player.give_exp(50);
+
+            if player.get_level() > 4 {
+                player.give_exp(20);
+            }
         }
 
         commands.entity(event.entity).despawn();

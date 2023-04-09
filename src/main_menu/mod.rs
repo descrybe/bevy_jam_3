@@ -5,13 +5,16 @@ pub mod systems;
 use bevy::prelude::*;
 
 use crate::AppState;
+use bevy_kira_audio::prelude::*;
 use systems::*;
 pub struct MainMenuPlugin;
 
 impl Plugin for MainMenuPlugin {
     fn build(&self, app: &mut App) {
         app.add_state::<MenuState>()
+            .add_plugin(AudioPlugin)
             .add_system(spawn_main_menu.in_schedule(OnEnter(AppState::MainMenu)))
+            .add_system(spawn_audio.in_schedule(OnEnter(AppState::MainMenu)))
             .add_systems(
                 (
                     play_button_interaction,

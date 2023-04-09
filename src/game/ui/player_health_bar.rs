@@ -68,7 +68,6 @@ pub fn stick_health_bar_to_player(
     player_query: Query<&Transform, With<Player>>,
 ) {
     let health = health_query.get_single().unwrap();
-    println!("health.amount() {}", health.amount());
 
     if let Ok(mut health_bar_transform) = health_bar_query.get_single_mut() {
         if let Ok(player_transform) = player_query.get_single() {

@@ -9,6 +9,15 @@ edition = "2021"
 bevy = "0.10.1"
 rand = "0.8.5"
 
+[dependencies.bevy_kira_audio]
+version = "0.15.0"
+default-features = false
+features = [
+  "wav",
+  "mp3",
+  "ogg",
+]
+
 [profile.release]
 opt-level = 3
 

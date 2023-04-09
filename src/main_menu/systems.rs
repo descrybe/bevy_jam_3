@@ -1,5 +1,6 @@
 use bevy::app::AppExit;
 use bevy::prelude::*;
+use bevy_kira_audio::{Audio, AudioControl};
 
 use crate::main_menu::components::MainMenu;
 use crate::AppState;
@@ -217,14 +218,11 @@ pub fn main_menu_setup(commands: &mut Commands, asset_server: &Res<AssetServer>)
 #[derive(Component)]
 pub struct Max;
 
-pub fn setup_bg(
-    mut commands: Commands,
-    asset_server: Res<AssetServer>,
-) {
+pub fn setup_bg(mut commands: Commands, asset_server: Res<AssetServer>) {
     let texture_handle = asset_server.load("sprites/menu_background.png");
 
-    commands.spawn(
-        (SpriteBundle {
+    commands.spawn((
+        SpriteBundle {
             texture: texture_handle.into(),
             ..Default::default()
         },
@@ -251,5 +249,23 @@ pub fn move_max(
         if keyboard_input.pressed(KeyCode::Up) {
             transform.translation.y += 1.0;
         }
+    }
+}
+
+pub fn spawn_audio(
+    app_state: Res<State<AppState>>,
+    audio: Res<Audio>,
+    asset_server: Res<AssetServer>,
+) {
+    let audio_track = asset_server.load("audio/main_menu_theme.mp3");
+
+    println!("app_state.0 {:?}", app_state.0);
+
+    if app_state.0 == AppState::MainMenu {
+        audio.play(audio_track).looped();
+        println!("meun state");
+    } else if app_state.0 == AppState::Game {
+        println!("game state");
+        audio.pause();
     }
 }
