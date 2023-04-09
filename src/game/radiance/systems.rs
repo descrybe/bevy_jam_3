@@ -136,7 +136,6 @@ pub fn spawn_radiance(
                     x: RADIANCE_SIZE,
                     y: RADIANCE_SIZE,
                 },
-                is_solid: false,
                 collision: CollisionData {
                     is_collided: false,
                     collision_side: Vec::new(),
