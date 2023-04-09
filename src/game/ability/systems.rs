@@ -1,5 +1,5 @@
 use bevy::{
-    prelude::{Component, Entity, EventReader, EventWriter, Query, Res, With},
+    prelude::{Entity, EventReader, EventWriter, Query, Res, With},
     time::Time,
 };
 

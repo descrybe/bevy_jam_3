@@ -14,7 +14,7 @@ use crate::{
         damage::components::{DamageDealerComponent, SelfDestructable},
         enemy::components::Enemy,
         flight::components::Flight,
-        player::{self, components::Player},
+        player::components::Player,
         rotator::components::Rotator,
         target::components::{DirectionHolderComponent, TargetHolderComponent},
     },
