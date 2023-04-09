@@ -6,7 +6,7 @@ use bevy::prelude::{IntoSystemConfigs, Plugin};
 
 use self::{events::CollisionEvent, systems::*};
 
-use super::{bullet::components::Bullet, enemy::components::Enemy, player::components::Player};
+use super::{bullet::components::Bullet, enemy::components::Enemy, player::components::Player, shuriken::components::Shuriken};
 
 pub struct CollisionPlugin;
 
@@ -17,6 +17,7 @@ impl Plugin for CollisionPlugin {
             .add_systems(
                 (
                     collision_detection_system::<Bullet, Enemy>,
+                    collision_detection_system::<Shuriken, Enemy>,
                     collision_detection_system::<Player, Enemy>,
                     internal_collision_detection_system::<Enemy>,
                 )
