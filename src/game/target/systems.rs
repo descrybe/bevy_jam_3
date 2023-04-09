@@ -1,8 +1,11 @@
 use std::ops::Sub;
 
-use bevy::prelude::{Commands, Entity, Query, Transform, Vec2, With};
+use bevy::prelude::{Commands, Entity, EventWriter, Query, Transform, Vec2, With};
 
-use super::components::{DirectionHolderComponent, TargetHolderComponent};
+use super::{
+    components::{DirectionHolderComponent, TargetHolderComponent},
+    events::TargetLostEvent,
+};
 
 pub fn target_tracking_system(
     mut commands: Commands,
@@ -26,5 +29,25 @@ pub fn target_tracking_system(
         let new_direction = target_transform.translation.sub(transform.translation);
         let new_coordinates = [new_direction.x, new_direction.y];
         direction_holder.direction = Vec2::from_array(new_coordinates).normalize();
+    }
+}
+
+pub fn target_actualization_system(
+    mut event_writer: EventWriter<TargetLostEvent>,
+    target_holder_query: Query<(&TargetHolderComponent, Entity)>,
+    entity_query: Query<Entity>,
+) {
+    if target_holder_query.is_empty() || entity_query.is_empty() {
+        return;
+    }
+
+    for (target_holder, holder_entity) in target_holder_query.iter() {
+        if entity_query.contains(target_holder.target_entity) {
+            continue;
+        }
+
+        event_writer.send(TargetLostEvent {
+            sender: holder_entity,
+        });
     }
 }

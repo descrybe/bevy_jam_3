@@ -1,7 +1,5 @@
 use bevy::prelude::*;
 
-use crate::game::damage::events::DamageEvent;
-
 use super::{components::HealthComponent, events::DeathEvent, DEATH_EDGE};
 
 pub fn health_check_system(
@@ -14,19 +12,5 @@ pub fn health_check_system(
         }
 
         event.send(DeathEvent { entity });
-    }
-}
-
-pub fn damage_income_system(
-    mut health_queary: Query<&mut HealthComponent, With<HealthComponent>>,
-    mut damage_event_reader: EventReader<DamageEvent>,
-) {
-    if damage_event_reader.is_empty() {
-        return;
-    }
-
-    for event in damage_event_reader.iter() {
-        let mut target = health_queary.get_mut(event.target).unwrap();
-        target.apply_damage(event.damage_amount);
     }
 }

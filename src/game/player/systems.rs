@@ -4,7 +4,9 @@ use bevy::window::PrimaryWindow;
 use super::components::Player;
 
 use super::{PLAYER_HEALTH, PLAYER_SIZE, PLAYER_SPEED};
+use crate::assets_cache::resources::AssetsCache;
 use crate::events::GameOver;
+use crate::game::collision::components::{Collidable, CollisionData};
 use crate::game::health::components::HealthComponent;
 use crate::game::health::events::DeathEvent;
 use crate::game::score::resources::*;
@@ -12,7 +14,7 @@ use crate::game::score::resources::*;
 pub fn spawn_player(
     mut commands: Commands,
     window_query: Query<&Window, With<PrimaryWindow>>,
-    asset_service: Res<AssetServer>,
+    asset_service: Res<AssetsCache>,
 ) {
     let window = window_query.get_single().unwrap();
 
@@ -23,7 +25,7 @@ pub fn spawn_player(
                 ..default()
             },
             transform: Transform::from_xyz(window.width() / 2.0, window.height() / 2.0, 0.0),
-            texture: asset_service.load("sprites/player.png"),
+            texture: asset_service.sprites.characters.wizzard.clone(),
             ..default()
         },
         Player {
@@ -32,6 +34,17 @@ pub fn spawn_player(
             health: PLAYER_HEALTH,
         },
         HealthComponent::new(PLAYER_HEALTH),
+        Collidable {
+            size: Vec2 {
+                x: PLAYER_SIZE,
+                y: PLAYER_SIZE,
+            },
+            is_solid: false,
+            collision: CollisionData {
+                is_collided: false,
+                collision_side: Vec::new(),
+            },
+        },
     ));
 }
 

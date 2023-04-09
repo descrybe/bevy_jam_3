@@ -1,6 +1,6 @@
 use bevy::prelude::Entity;
 
-pub struct DamageEvent {
-    pub dealer: Entity,
+pub struct LaunchBulletEvent {
+    pub owner: Entity,
     pub target: Entity,
 }
