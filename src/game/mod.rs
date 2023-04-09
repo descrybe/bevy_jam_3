@@ -9,7 +9,9 @@ pub mod lighting;
 pub mod player;
 mod random_position;
 pub mod rotator;
+pub mod sattlite;
 pub mod score;
+pub mod shuriken;
 pub mod systems;
 pub mod target;
 pub mod ui;
@@ -22,7 +24,9 @@ use flight::FirePlugin;
 use lighting::LightingPlugin;
 use player::PlayerPlugin;
 use rotator::RotatorPlugin;
+use sattlite::SattelitePlugin;
 use score::ScorePlugin;
+use shuriken::ShurikenPlugin;
 use systems::*;
 use ui::UIPlugin;
 
@@ -56,6 +60,8 @@ impl Plugin for GamePlugin {
             .add_plugin(HealthPlugin)
             .add_plugin(DamagePlugin)
             .add_plugin(LightingPlugin)
+            .add_plugin(ShurikenPlugin)
+            .add_plugin(SattelitePlugin)
             .add_system(set_game_running.in_schedule(OnEnter(AppState::Game)))
             .add_system(toggle_game_running_state.run_if(in_state(AppState::Game)));
     }
