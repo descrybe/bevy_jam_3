@@ -138,7 +138,6 @@ pub fn spawn_bullet(
                     x: BULLET_SIZE,
                     y: BULLET_SIZE,
                 },
-                is_solid: false,
                 collision: CollisionData {
                     is_collided: false,
                     collision_side: Vec::new(),
