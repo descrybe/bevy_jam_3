@@ -7,6 +7,8 @@ pub mod flight;
 pub mod health;
 pub mod lighting;
 pub mod player;
+pub mod player_binder;
+pub mod radiance;
 mod random_position;
 pub mod rotator;
 pub mod sattlite;
@@ -23,6 +25,8 @@ use enemy::EnemyPlugin;
 use flight::FirePlugin;
 use lighting::LightingPlugin;
 use player::PlayerPlugin;
+use player_binder::PlayerBinderPlugin;
+use radiance::RadiancePlugin;
 use rotator::RotatorPlugin;
 use sattlite::SattelitePlugin;
 use score::ScorePlugin;
@@ -62,6 +66,8 @@ impl Plugin for GamePlugin {
             .add_plugin(LightingPlugin)
             .add_plugin(ShurikenPlugin)
             .add_plugin(SattelitePlugin)
+            .add_plugin(RadiancePlugin)
+            .add_plugin(PlayerBinderPlugin)
             .add_system(set_game_running.in_schedule(OnEnter(AppState::Game)))
             .add_system(toggle_game_running_state.run_if(in_state(AppState::Game)));
     }
