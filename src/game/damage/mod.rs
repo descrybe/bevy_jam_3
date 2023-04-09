@@ -6,7 +6,7 @@ use bevy::prelude::{IntoSystemConfig, IntoSystemConfigs, Plugin};
 
 use self::{events::DamageEvent, systems::*};
 
-use super::{bullet::components::Bullet, enemy::components::Enemy, player::components::Player};
+use super::{bullet::components::Bullet, enemy::components::Enemy, player::components::Player, shuriken::components::Shuriken};
 
 pub struct DamagePlugin;
 
@@ -21,6 +21,7 @@ impl Plugin for DamagePlugin {
             .add_systems(
                 (
                     collision_damage_system::<Bullet, Enemy>,
+                    collision_damage_system::<Shuriken, Enemy>,
                     collision_damage_system::<Enemy, Player>,
                 )
                     .after(damage_dealler_destruct_system),
