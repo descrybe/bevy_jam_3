@@ -26,7 +26,11 @@ pub fn spawn_player(
             texture: asset_service.load("sprites/player.png"),
             ..default()
         },
-        Player {},
+        Player {
+            exp: 0,
+            lvl: 1,
+            health: PLAYER_HEALTH,
+        },
         HealthComponent::new(PLAYER_HEALTH),
     ));
 }
