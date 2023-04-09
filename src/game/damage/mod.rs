@@ -21,7 +21,6 @@ impl Plugin for DamagePlugin {
                 (
                     collision_damage_system::<Bullet, Enemy>,
                     collision_damage_system::<Enemy, Player>,
-                    collision_damage_system::<Enemy, Enemy>,
                 )
                     .after(damage_income_system),
             );

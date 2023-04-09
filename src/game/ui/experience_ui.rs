@@ -1,7 +1,9 @@
-use bevy::{prelude::*};
+use crate::assets_cache::resources::AssetsCache;
+use bevy::prelude::*;
+
 use super::constants::*;
 
-pub fn spawn_exp_bar(mut commands: Commands, asset_server: Res<AssetServer>) {
+pub fn spawn_exp_bar(mut commands: Commands, asset_server: Res<AssetsCache>) {
     commands
         .spawn(NodeBundle {
             style: EXPERIENCE_BAR_WRAPPER_STYLES,
@@ -19,15 +21,14 @@ pub fn spawn_exp_bar(mut commands: Commands, asset_server: Res<AssetServer>) {
                     ..default()
                 })
                 .with_children(|parent| {
-                    parent
-                        .spawn(NodeBundle {
-                            style: Style {
-                                size: Size::width(Val::Percent(100.0)),
-                                ..default()
-                            },
-                            background_color: EXPREIENCE_BAR_BACKGROUND_COLOR.into(),
+                    parent.spawn(NodeBundle {
+                        style: Style {
+                            size: Size::width(Val::Percent(100.0)),
                             ..default()
-                        });
+                        },
+                        background_color: EXPREIENCE_BAR_BACKGROUND_COLOR.into(),
+                        ..default()
+                    });
                 })
                 .with_children(|parent| {
                     parent
@@ -54,7 +55,7 @@ pub fn spawn_exp_bar(mut commands: Commands, asset_server: Res<AssetServer>) {
                                 TextBundle::from_section(
                                     "LVL 1", // тут вставлять значение текущего уровня
                                     TextStyle {
-                                        font: asset_server.load("fonts/CyrillicPixel.ttf"),
+                                        font: asset_server.fonts.cyrillic_pixel.clone(),
                                         font_size: 30.0,
                                         color: Color::WHITE,
                                     },

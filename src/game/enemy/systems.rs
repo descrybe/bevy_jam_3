@@ -3,6 +3,7 @@ use std::ops::{Add, Sub};
 use bevy::{prelude::*, window::PrimaryWindow};
 use rand::prelude::random;
 
+use crate::assets_cache::resources::AssetsCache;
 use crate::game::collision::components::{Collidable, CollisionData};
 use crate::game::damage::components::DamageDealerComponent;
 use crate::game::health::components::HealthComponent;
@@ -21,7 +22,7 @@ pub fn spawn_enemie_wave(
     mut commands: Commands,
     window_query: Query<&Window, With<PrimaryWindow>>,
     player_query: Query<(Entity, &Transform), With<Player>>,
-    asset_server: Res<AssetServer>,
+    asset_server: Res<AssetsCache>,
     mut position_generator: ResMut<ScreenEdgePositionGenerator>,
     mut wave_spawn_event: EventReader<WaveSpawnEvent>,
 ) {
@@ -60,7 +61,7 @@ pub fn spawn_enemie_wave(
                     ..default()
                 },
                 transform: Transform::from_translation(translated_position),
-                texture: asset_server.load("sprites/zombie.png"),
+                texture: asset_server.sprites.characters.zombie.clone(),
                 ..default()
             },
             Enemy {},

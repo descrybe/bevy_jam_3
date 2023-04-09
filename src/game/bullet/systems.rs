@@ -1,18 +1,19 @@
 use super::{components::Bullet, BULLET_DAMAGE};
-use crate::game::{
-    collision::components::{Collidable, CollisionData},
-    damage::{components::DamageDealerComponent, events::DamageEvent},
-    enemy::components::Enemy,
-    flight::{components::Flight, resources::FireSpawnConfig},
-    player::components::Player,
-    rotator::components::Rotator,
-    target::components::{DirectionHolderComponent, TargetHolderComponent},
+use crate::{
+    assets_cache::resources::AssetsCache,
+    game::{
+        collision::components::{Collidable, CollisionData},
+        damage::{components::DamageDealerComponent, events::DamageEvent},
+        enemy::components::Enemy,
+        flight::{components::Flight, resources::FireSpawnConfig},
+        player::components::Player,
+        rotator::components::Rotator,
+        target::components::{DirectionHolderComponent, TargetHolderComponent},
+    },
 };
 
 use bevy::{
-    prelude::{
-        AssetServer, Commands, Entity, EventReader, Query, Res, ResMut, Transform, Vec2, With,
-    },
+    prelude::{Commands, Entity, EventReader, Query, Res, ResMut, Transform, Vec2, With},
     sprite::{Sprite, SpriteBundle},
     time::Time,
     utils::default,
@@ -48,7 +49,7 @@ fn get_nearest_enity(
 
 pub fn spawn_bullet(
     mut commands: Commands,
-    asset_service: Res<AssetServer>,
+    asset_service: Res<AssetsCache>,
     enemy_query: Query<(Entity, &Transform), With<Enemy>>,
     player_query: Query<&Transform, With<Player>>,
     mut config: ResMut<FireSpawnConfig>,
@@ -72,7 +73,7 @@ pub fn spawn_bullet(
                 ..default()
             },
             transform: player_query.get_single().unwrap().clone(),
-            texture: asset_service.load("sprites/projectile.png"),
+            texture: asset_service.sprites.projectiles.bottle.clone(),
             ..default()
         },
         Bullet {},
