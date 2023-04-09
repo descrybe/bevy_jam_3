@@ -3,7 +3,7 @@ use crate::{
     assets_cache::resources::AssetsCache,
     game::{
         collision::components::{Collidable, CollisionData},
-        damage::{components::DamageDealerComponent, events::DamageEvent},
+        damage::components::{DamageDealerComponent, SelfDestructable},
         enemy::components::Enemy,
         flight::{components::Flight, resources::FireSpawnConfig},
         player::components::Player,
@@ -13,7 +13,7 @@ use crate::{
 };
 
 use bevy::{
-    prelude::{Commands, Entity, EventReader, Query, Res, ResMut, Transform, Vec2, With},
+    prelude::{Commands, Entity, Query, Res, ResMut, Transform, Vec2, With},
     sprite::{Sprite, SpriteBundle},
     time::Time,
     utils::default,
@@ -92,6 +92,7 @@ pub fn spawn_bullet(
         DamageDealerComponent {
             damage: BULLET_DAMAGE,
         },
+        SelfDestructable::new(0.1),
         Collidable {
             size: Vec2 {
                 x: BULLET_SIZE,
@@ -104,23 +105,4 @@ pub fn spawn_bullet(
             },
         },
     ));
-}
-
-pub fn bullet_damage_event_handler(
-    mut commands: Commands,
-    mut event_reader: EventReader<DamageEvent>,
-    query: Query<&Bullet>,
-) {
-    if event_reader.is_empty() {
-        return;
-    }
-
-    for event in event_reader.iter() {
-        let entity = event.dealer;
-        if !query.contains(entity) {
-            continue;
-        }
-
-        commands.entity(entity).despawn();
-    }
 }

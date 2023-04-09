@@ -1,8 +1,17 @@
-use bevy::prelude::{Component, Entity, EventReader, EventWriter, Query, With};
+use bevy::{
+    prelude::{Commands, Component, Entity, EventReader, EventWriter, Query, Res, With},
+    time::Time,
+};
 
-use crate::game::{collision::events::CollisionEvent, health::components::HealthComponent};
+use crate::game::{
+    collision::events::CollisionEvent, health::components::HealthComponent,
+    target::events::TargetLostEvent,
+};
 
-use super::{components::DamageDealerComponent, events::DamageEvent};
+use super::{
+    components::{DamageDealerComponent, SelfDestructable},
+    events::DamageEvent,
+};
 
 pub fn damage_income_system(
     mut health_queary: Query<&mut HealthComponent, With<HealthComponent>>,
@@ -54,5 +63,66 @@ pub fn collision_damage_system<TAttacker: Component, TVictim: Component>(
             });
             return;
         }
+    }
+}
+
+pub fn damage_dealler_destruct_system(
+    mut event_reader: EventReader<DamageEvent>,
+    mut query: Query<&mut SelfDestructable>,
+) {
+    if event_reader.is_empty() {
+        return;
+    }
+
+    for event in event_reader.iter() {
+        let entity = event.dealer;
+        if !query.contains(entity) {
+            continue;
+        }
+
+        let mut dealer = query.get_mut(entity).unwrap();
+        dealer.start_countdown();
+    }
+}
+
+pub fn update_timers(mut query: Query<&mut SelfDestructable>, time: Res<Time>) {
+    for mut item in query.iter_mut() {
+        item.update_timer(time.delta());
+    }
+}
+
+pub fn self_destructing_despawn_system(
+    mut commands: Commands,
+    query: Query<(Entity, &SelfDestructable)>,
+) {
+    if query.is_empty() {
+        return;
+    }
+
+    let entities_to_despawn = query
+        .iter()
+        .filter(|(_, options)| options.is_ready_to_die())
+        .map(|(entity, _)| entity);
+
+    for entity in entities_to_despawn {
+        commands.entity(entity).despawn();
+    }
+}
+
+pub fn target_lost_event_system(
+    mut event_reader: EventReader<TargetLostEvent>,
+    mut query: Query<&mut SelfDestructable>,
+) {
+    if event_reader.is_empty() {
+        return;
+    }
+
+    for event in event_reader.iter() {
+        if !query.contains(event.sender) {
+            continue;
+        }
+
+        let mut destructable_component = query.get_mut(event.sender).unwrap();
+        destructable_component.start_countdown();
     }
 }

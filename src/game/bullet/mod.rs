@@ -14,8 +14,8 @@ pub struct BulletPlugin;
 
 impl Plugin for BulletPlugin {
     fn build(&self, app: &mut App) {
-        app.add_systems(
-            (spawn_bullet, bullet_damage_event_handler)
+        app.add_system(
+            (spawn_bullet)
                 .in_set(OnUpdate(AppState::Game))
                 .in_set(OnUpdate(GameSimulationState::Running)),
         );

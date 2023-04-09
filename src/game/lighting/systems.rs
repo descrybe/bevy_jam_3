@@ -8,7 +8,10 @@ use rand::{seq::IteratorRandom, thread_rng};
 use crate::{
     assets_cache::resources::AssetsCache,
     game::{
-        damage::{components::DamageDealerComponent, events::DamageEvent},
+        damage::{
+            components::{DamageDealerComponent, SelfDestructable},
+            events::DamageEvent,
+        },
         flight::resources::FireSpawnConfig,
     },
 };
@@ -70,8 +73,10 @@ fn spawn_lightning_bolt(
                 target_entity: target_entity,
             },
             DamageDealerComponent { damage: 1000 },
+            SelfDestructable::new(1.0),
         ))
         .id();
+
     damage_event_writer.send(DamageEvent {
         dealer: lighing_entity,
         target: target_entity,
