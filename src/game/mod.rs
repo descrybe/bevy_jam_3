@@ -1,3 +1,4 @@
+pub mod ability;
 pub mod bullet;
 pub mod collision;
 pub mod damage;
@@ -27,6 +28,7 @@ use ui::UIPlugin;
 
 use crate::{events::GameOver, AppState};
 
+use self::ability::AbilityPlugin;
 use self::collision::CollisionPlugin;
 use self::damage::DamagePlugin;
 use self::health::HealthPlugin;
@@ -50,6 +52,7 @@ impl Plugin for GamePlugin {
             .add_plugin(RotatorPlugin)
             .add_plugin(UIPlugin)
             .add_plugin(CollisionPlugin)
+            .add_plugin(AbilityPlugin)
             .add_plugin(HealthPlugin)
             .add_plugin(DamagePlugin)
             .add_plugin(LightingPlugin)
