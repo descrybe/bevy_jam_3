@@ -100,6 +100,7 @@ pub fn spawn_enemie_wave(
                 sprite: TextureAtlasSprite {
                     index: sprite_index,
                     custom_size: Option::Some(Vec2::new(ENEMY_SIZE, ENEMY_SIZE)),
+                    flip_x: true,
                     ..default()
                 },
                 transform: Transform::from_translation(translated_position),
@@ -133,6 +134,7 @@ pub fn enemy_movement(
             direction_holder.direction.y,
             0.0,
         );
+
         transform.translation += direction * ENEMY_SPEED * time.delta_seconds();
     }
 }

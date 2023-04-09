@@ -88,9 +88,11 @@ pub fn player_health_check_system(
     mut commands: Commands,
     mut event_reader: EventReader<DeathEvent>,
     mut game_over_event_writer: EventWriter<GameOver>,
+    health_query: Query<&HealthComponent, With<Player>>,
     player_query: Query<Entity, With<Player>>,
     score: Res<Score>,
 ) {
+    let health = health_query.get_single().unwrap();
     if event_reader.is_empty() {
         return;
     }
@@ -100,7 +102,9 @@ pub fn player_health_check_system(
             continue;
         }
 
-        game_over_event_writer.send(GameOver { score: score.value });
-        commands.entity(event.entity).despawn_recursive();
+        if health.amount() < 0 {
+            game_over_event_writer.send(GameOver { score: score.value });
+            commands.entity(event.entity).despawn_recursive();
+        }        
     }
 }
