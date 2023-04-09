@@ -1,17 +1,19 @@
 use super::{components::Bullet, BULLET_DAMAGE};
-use crate::game::{
-    damage::{components::DamageDealerComponent, events::DamageEvent},
-    enemy::{components::Enemy, ENEMY_SIZE},
-    flight::{components::Flight, resources::FireSpawnConfig},
-    player::components::Player,
-    rotator::components::Rotator,
-    target::components::{DirectionHolderComponent, TargetHolderComponent},
+use crate::{
+    assets_cache::resources::AssetsCache,
+    game::{
+        collision::components::{Collidable, CollisionData},
+        damage::components::{DamageDealerComponent, SelfDestructable},
+        enemy::components::Enemy,
+        flight::{components::Flight, resources::FireSpawnConfig},
+        player::components::Player,
+        rotator::components::Rotator,
+        target::components::{DirectionHolderComponent, TargetHolderComponent},
+    },
 };
 
 use bevy::{
-    prelude::{
-        AssetServer, Commands, Entity, EventWriter, Query, Res, ResMut, Transform, Vec2, With,
-    },
+    prelude::{Commands, Entity, Query, Res, ResMut, Transform, Vec2, With},
     sprite::{Sprite, SpriteBundle},
     time::Time,
     utils::default,
@@ -47,7 +49,7 @@ fn get_nearest_enity(
 
 pub fn spawn_bullet(
     mut commands: Commands,
-    asset_service: Res<AssetServer>,
+    asset_service: Res<AssetsCache>,
     enemy_query: Query<(Entity, &Transform), With<Enemy>>,
     player_query: Query<&Transform, With<Player>>,
     mut config: ResMut<FireSpawnConfig>,
@@ -71,7 +73,7 @@ pub fn spawn_bullet(
                 ..default()
             },
             transform: player_query.get_single().unwrap().clone(),
-            texture: asset_service.load("sprites/projectile.png"),
+            texture: asset_service.sprites.projectiles.bottle.clone(),
             ..default()
         },
         Bullet {},
@@ -90,43 +92,17 @@ pub fn spawn_bullet(
         DamageDealerComponent {
             damage: BULLET_DAMAGE,
         },
+        SelfDestructable::new(0.1),
+        Collidable {
+            size: Vec2 {
+                x: BULLET_SIZE,
+                y: BULLET_SIZE,
+            },
+            is_solid: false,
+            collision: CollisionData {
+                is_collided: false,
+                collision_side: Vec::new(),
+            },
+        },
     ));
-}
-
-pub fn bullet_hit_enemy(
-    mut commands: Commands,
-    bullet_query: Query<
-        (
-            Entity,
-            &TargetHolderComponent,
-            &Transform,
-            &DamageDealerComponent,
-        ),
-        With<Bullet>,
-    >,
-    enemy_query: Query<(Entity, &Transform), With<Enemy>>,
-    mut damage_event_writer: EventWriter<DamageEvent>,
-) {
-    for (bullet_entity, bullet_target, bullet_transform, damage_dealer) in bullet_query.iter() {
-        if !enemy_query.contains(bullet_target.target_entity) {
-            commands.entity(bullet_entity).despawn();
-            continue;
-        }
-
-        let (enemy_entity, nearest_enemy_transform) =
-            enemy_query.get(bullet_target.target_entity).unwrap();
-        let distance = nearest_enemy_transform
-            .translation
-            .distance(bullet_transform.translation);
-        let player_radius = BULLET_SIZE / 2.0;
-        let enemy_radius = ENEMY_SIZE / 2.0;
-
-        if distance < player_radius + enemy_radius {
-            commands.entity(bullet_entity).despawn();
-            damage_event_writer.send(DamageEvent {
-                dealer: bullet_entity,
-                target: enemy_entity,
-            })
-        }
-    }
 }

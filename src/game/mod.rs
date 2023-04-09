@@ -1,8 +1,10 @@
 pub mod bullet;
+pub mod collision;
 pub mod damage;
 pub mod enemy;
 pub mod flight;
 pub mod health;
+pub mod lighting;
 pub mod player;
 mod random_position;
 pub mod rotator;
@@ -10,22 +12,22 @@ pub mod score;
 pub mod systems;
 pub mod target;
 pub mod ui;
-pub mod lighting;
 
 use bevy::prelude::*;
 
 use bullet::BulletPlugin;
 use enemy::EnemyPlugin;
 use flight::FirePlugin;
+use lighting::LightingPlugin;
 use player::PlayerPlugin;
 use rotator::RotatorPlugin;
 use score::ScorePlugin;
-use ui::UIPlugin;
-use lighting::LightingPlugin;
 use systems::*;
+use ui::UIPlugin;
 
 use crate::{events::GameOver, AppState};
 
+use self::collision::CollisionPlugin;
 use self::damage::DamagePlugin;
 use self::health::HealthPlugin;
 use self::random_position::RandomPositionPlugin;
@@ -47,6 +49,7 @@ impl Plugin for GamePlugin {
             .add_plugin(FirePlugin)
             .add_plugin(RotatorPlugin)
             .add_plugin(UIPlugin)
+            .add_plugin(CollisionPlugin)
             .add_plugin(HealthPlugin)
             .add_plugin(DamagePlugin)
             .add_plugin(LightingPlugin)

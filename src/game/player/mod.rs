@@ -11,7 +11,7 @@ use bevy::prelude::*;
 
 pub const PLAYER_SPEED: f32 = 500.0;
 pub const PLAYER_SIZE: f32 = 64.0;
-pub const PLAYER_HEALTH: i32 = 100;
+pub const PLAYER_HEALTH: i32 = 10000000;
 
 pub struct PlayerPlugin;
 

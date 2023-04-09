@@ -3,12 +3,12 @@ use std::ops::{Add, Sub};
 use bevy::{prelude::*, window::PrimaryWindow};
 use rand::prelude::random;
 
+use crate::assets_cache::resources::AssetsCache;
+use crate::game::collision::components::{Collidable, CollisionData};
 use crate::game::damage::components::DamageDealerComponent;
-use crate::game::damage::events::DamageEvent;
 use crate::game::health::components::HealthComponent;
 use crate::game::health::events::DeathEvent;
 use crate::game::player::components::Player;
-use crate::game::player::PLAYER_SIZE;
 use crate::game::random_position::screen_edge_position_generator::ScreenEdgePositionGenerator;
 use crate::game::random_position::{Point, PositionGenerator, StraightLine};
 use crate::game::target::components::{DirectionHolderComponent, TargetHolderComponent};
@@ -22,7 +22,7 @@ pub fn spawn_enemie_wave(
     mut commands: Commands,
     window_query: Query<&Window, With<PrimaryWindow>>,
     player_query: Query<(Entity, &Transform), With<Player>>,
-    asset_server: Res<AssetServer>,
+    asset_server: Res<AssetsCache>,
     mut position_generator: ResMut<ScreenEdgePositionGenerator>,
     mut wave_spawn_event: EventReader<WaveSpawnEvent>,
 ) {
@@ -61,7 +61,7 @@ pub fn spawn_enemie_wave(
                     ..default()
                 },
                 transform: Transform::from_translation(translated_position),
-                texture: asset_server.load("sprites/zombie.png"),
+                texture: asset_server.sprites.characters.zombie.clone(),
                 ..default()
             },
             Enemy {},
@@ -74,6 +74,17 @@ pub fn spawn_enemie_wave(
             HealthComponent::new(ENEMY_HEALTH),
             DamageDealerComponent {
                 damage: ENEMY_DAMAGE,
+            },
+            Collidable {
+                size: Vec2 {
+                    x: ENEMY_SIZE,
+                    y: ENEMY_SIZE,
+                },
+                is_solid: false,
+                collision: CollisionData {
+                    is_collided: false,
+                    collision_side: Vec::new(),
+                },
             },
         ));
     }
@@ -122,32 +133,5 @@ pub fn kill_enemy(
         }
 
         commands.entity(event.entity).despawn();
-    }
-}
-
-pub fn enemy_hit_player(
-    mut player_query: Query<(Entity, &Transform), With<Player>>,
-    enemy_query: Query<(Entity, &Transform, &DamageDealerComponent), With<Enemy>>,
-    mut damage_event_writer: EventWriter<DamageEvent>,
-) {
-    if enemy_query.is_empty() || player_query.is_empty() {
-        return;
-    }
-
-    if let Ok((player_entity, player_transform)) = player_query.get_single_mut() {
-        for (enemy_entity, enemy_transform, damage_dealer) in enemy_query.iter() {
-            let distance = player_transform
-                .translation
-                .distance(enemy_transform.translation);
-
-            let player_radius = PLAYER_SIZE / 2.0;
-            let enemy_radius = ENEMY_SIZE / 2.0;
-            if distance < player_radius + enemy_radius {
-                damage_event_writer.send(DamageEvent {
-                    dealer: enemy_entity,
-                    target: player_entity,
-                });
-            }
-        }
     }
 }

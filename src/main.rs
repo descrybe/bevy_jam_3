@@ -1,3 +1,4 @@
+pub mod assets_cache;
 pub mod components;
 pub mod dice;
 pub mod events;
@@ -5,12 +6,13 @@ pub mod game;
 mod main_menu;
 mod systems;
 
+use assets_cache::AssetsCachePlugin;
 use dice::DicePlugin;
 use game::GamePlugin;
 use main_menu::MainMenuPlugin;
 
-use systems::*;
 use events::*;
+use systems::*;
 
 use bevy::prelude::*;
 fn main() {
@@ -20,6 +22,7 @@ fn main() {
         .add_plugin(MainMenuPlugin)
         .add_plugin(GamePlugin)
         .add_plugin(DicePlugin)
+        .add_plugin(AssetsCachePlugin)
         .add_startup_system(spawn_camera)
         .add_event::<GameOver>()
         .add_system(set_game_active)

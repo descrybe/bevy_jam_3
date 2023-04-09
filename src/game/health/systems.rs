@@ -1,7 +1,5 @@
 use bevy::prelude::*;
 
-use crate::game::damage::events::DamageEvent;
-
 use super::{components::HealthComponent, events::DeathEvent, DEATH_EDGE};
 
 pub fn health_check_system(
@@ -16,4 +14,3 @@ pub fn health_check_system(
         event.send(DeathEvent { entity });
     }
 }
-
