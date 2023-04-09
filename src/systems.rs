@@ -30,7 +30,7 @@ pub fn camera_follow(
     player_query: Query<&Transform, With<Player>>,
 ) {
     let mut camera = camera_query.single_mut();
-    
+
     if let Ok(player) = player_query.get_single() {
         camera.translation.x = player.translation.x;
         camera.translation.y = player.translation.y;
@@ -62,7 +62,7 @@ pub fn set_main_menu_active(
 }
 
 pub fn game_over_hander(mut game_over_event_writer: EventReader<GameOver>) {
-    for event in game_over_event_writer.iter() {
+    for _ in game_over_event_writer.iter() {
         println!("Game over!");
     }
 }

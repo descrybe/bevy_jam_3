@@ -1,5 +1,5 @@
 use bevy::{
-    prelude::{Component, Entity, EventReader, EventWriter, Query, Transform, With, Without},
+    prelude::{Component, Entity, EventWriter, Query, Transform, With, Without},
     sprite::collide_aabb::{collide, Collision},
 };
 
@@ -70,7 +70,7 @@ fn find_collisions(
     second_transform: &Transform,
     first_entity: Entity,
     second_entity: Entity,
-    mut collision_event_writer: &mut EventWriter<CollisionEvent>,
+    collision_event_writer: &mut EventWriter<CollisionEvent>,
 ) {
     let collision = collide(
         first_transform.translation,

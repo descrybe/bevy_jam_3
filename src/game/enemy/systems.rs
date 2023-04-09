@@ -5,11 +5,9 @@ use rand::prelude::random;
 
 use crate::game::collision::components::{Collidable, CollisionData};
 use crate::game::damage::components::DamageDealerComponent;
-use crate::game::damage::events::DamageEvent;
 use crate::game::health::components::HealthComponent;
 use crate::game::health::events::DeathEvent;
 use crate::game::player::components::Player;
-use crate::game::player::PLAYER_SIZE;
 use crate::game::random_position::screen_edge_position_generator::ScreenEdgePositionGenerator;
 use crate::game::random_position::{Point, PositionGenerator, StraightLine};
 use crate::game::target::components::{DirectionHolderComponent, TargetHolderComponent};
@@ -134,32 +132,5 @@ pub fn kill_enemy(
         }
 
         commands.entity(event.entity).despawn();
-    }
-}
-
-pub fn enemy_hit_player(
-    mut player_query: Query<(Entity, &Transform), With<Player>>,
-    enemy_query: Query<(Entity, &Transform, &DamageDealerComponent), With<Enemy>>,
-    mut damage_event_writer: EventWriter<DamageEvent>,
-) {
-    if enemy_query.is_empty() || player_query.is_empty() {
-        return;
-    }
-
-    if let Ok((player_entity, player_transform)) = player_query.get_single_mut() {
-        for (enemy_entity, enemy_transform, damage_dealer) in enemy_query.iter() {
-            let distance = player_transform
-                .translation
-                .distance(enemy_transform.translation);
-
-            let player_radius = PLAYER_SIZE / 2.0;
-            let enemy_radius = ENEMY_SIZE / 2.0;
-            if distance < player_radius + enemy_radius {
-                damage_event_writer.send(DamageEvent {
-                    dealer: enemy_entity,
-                    target: player_entity,
-                });
-            }
-        }
     }
 }

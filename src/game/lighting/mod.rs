@@ -10,11 +10,10 @@ use bevy::prelude::*;
 
 pub struct LightingPlugin;
 
-use crate::game::flight::resources::FireSpawnConfig;
-
 impl Plugin for LightingPlugin {
     fn build(&self, app: &mut App) {
-        app.add_system((spawn_lightning_bolts)
+        app.add_system(
+            (spawn_lightning_bolts)
                 .in_set(OnUpdate(AppState::Game))
                 .in_set(OnUpdate(GameSimulationState::Running)),
         );

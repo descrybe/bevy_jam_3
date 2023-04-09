@@ -1,22 +1,17 @@
 use super::{components::Bullet, BULLET_DAMAGE};
 use crate::game::{
-    collision::{
-        components::{Collidable, CollisionData},
-        events::CollisionEvent,
-    },
+    collision::components::{Collidable, CollisionData},
     damage::{components::DamageDealerComponent, events::DamageEvent},
-    enemy::{components::Enemy, ENEMY_SIZE},
+    enemy::components::Enemy,
     flight::{components::Flight, resources::FireSpawnConfig},
-    health::components::HealthComponent,
-    player::{components::Player, resources::Health},
+    player::components::Player,
     rotator::components::Rotator,
     target::components::{DirectionHolderComponent, TargetHolderComponent},
 };
 
 use bevy::{
     prelude::{
-        AssetServer, Commands, Entity, EventReader, EventWriter, Query, Res, ResMut, Transform,
-        Vec2, With,
+        AssetServer, Commands, Entity, EventReader, Query, Res, ResMut, Transform, Vec2, With,
     },
     sprite::{Sprite, SpriteBundle},
     time::Time,
@@ -110,27 +105,21 @@ pub fn spawn_bullet(
     ));
 }
 
-pub fn bullet_collision_handler(
+pub fn bullet_damage_event_handler(
     mut commands: Commands,
-    mut collision_event_reader: EventReader<CollisionEvent>,
-    mut damage_event_writer: EventWriter<DamageEvent>,
-    enemy_query: Query<&HealthComponent, With<Enemy>>,
-    bullet_query: Query<&DamageDealerComponent, With<Bullet>>,
+    mut event_reader: EventReader<DamageEvent>,
+    query: Query<&Bullet>,
 ) {
-    if collision_event_reader.is_empty() {
+    if event_reader.is_empty() {
         return;
     }
 
-    for event in collision_event_reader.iter() {
-        if !bullet_query.contains(*event.first()) || !enemy_query.contains(*event.second()) {
+    for event in event_reader.iter() {
+        let entity = event.dealer;
+        if !query.contains(entity) {
             continue;
         }
 
-        damage_event_writer.send(DamageEvent {
-            dealer: *event.first(),
-            target: *event.second(),
-        });
-
-        commands.entity(*event.first()).despawn();
+        commands.entity(entity).despawn();
     }
 }
