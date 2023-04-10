@@ -1,5 +1,6 @@
 use bevy::{
-    prelude::{AssetServer, FromWorld, Handle, Image, Resource},
+    prelude::{AssetServer, Assets, FromWorld, Handle, Image, Resource, Vec2},
+    sprite::TextureAtlas,
     text::Font,
 };
 
@@ -28,11 +29,23 @@ pub struct CharactersSprites {
     pub zombie: Handle<Image>,
     pub wizzard: Handle<Image>,
 }
-pub struct UISprites {}
+pub struct UISprites {
+    pub dices: Dices,
+}
+
+pub struct Dices {
+    pub bottle: Handle<Image>,
+    pub heart: Handle<Image>,
+    pub radiance: Handle<Image>,
+    pub flame: Handle<Image>,
+    pub shuriken: Handle<Image>,
+    pub lightning: Handle<Image>,
+}
 
 impl FromWorld for AssetsCache {
     fn from_world(world: &mut bevy::prelude::World) -> Self {
         let assets_loader = world.get_resource::<AssetServer>().unwrap();
+        let texture_atlas = world.get_resource::<Assets<TextureAtlas>>();
 
         return AssetsCache {
             fonts: Fonts {
@@ -43,7 +56,16 @@ impl FromWorld for AssetsCache {
                     zombie: assets_loader.load("sprites/zombie.png"),
                     wizzard: assets_loader.load("sprites/player.png"),
                 },
-                ui: UISprites {},
+                ui: UISprites {
+                    dices: Dices {
+                        bottle: assets_loader.load("sprites/dice/dice1.png"),
+                        heart: assets_loader.load("sprites/dice/dice2.png"),
+                        radiance: assets_loader.load("sprites/dice/dice3.png"),
+                        flame: assets_loader.load("sprites/dice/dice4.png"),
+                        shuriken: assets_loader.load("sprites/dice/dice5.png"),
+                        lightning: assets_loader.load("sprites/dice/dice6.png"),
+                    },
+                },
                 projectiles: ProjectileSprites {
                     bottle: assets_loader.load("sprites/projectile.png"),
                     shuriken: assets_loader.load("sprites/shuriken.png"),
