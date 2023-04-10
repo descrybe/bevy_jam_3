@@ -14,7 +14,7 @@ impl Plugin for MainMenuPlugin {
         app.add_state::<MenuState>()
             .add_plugin(AudioPlugin)
             .add_system(spawn_main_menu.in_schedule(OnEnter(AppState::MainMenu)))
-            .add_system(spawn_audio.in_schedule(OnEnter(AppState::MainMenu)))
+            .add_system(start_menu_audio.in_schedule(OnEnter(AppState::MainMenu)))
             .add_systems(
                 (
                     play_button_interaction,
