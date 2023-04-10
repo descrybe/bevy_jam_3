@@ -3,12 +3,14 @@ use std::ops::{Add, Sub};
 use bevy::{prelude::*, window::PrimaryWindow};
 use rand::prelude::random;
 
+use crate::AppState;
 use crate::assets_cache::resources::AssetsCache;
+use crate::game::GameSimulationState;
 use crate::game::collision::components::{Collidable, CollisionData, Solid};
 use crate::game::damage::components::DamageDealerComponent;
 use crate::game::health::components::HealthComponent;
 use crate::game::health::events::DeathEvent;
-use crate::game::player::components::Player;
+use crate::game::player::components::{Player, EXPERIENCE_THRESHOLD};
 use crate::game::random_position::screen_edge_position_generator::ScreenEdgePositionGenerator;
 use crate::game::random_position::{Point, PositionGenerator, StraightLine};
 use crate::game::target::components::{DirectionHolderComponent, TargetHolderComponent};
@@ -16,7 +18,7 @@ use crate::game::target::components::{DirectionHolderComponent, TargetHolderComp
 use super::events::WaveSpawnEvent;
 use super::resources::EnemyWavesSpawnConfig;
 use super::{components::*, ENEMY_DAMAGE, ENEMY_HEALTH};
-use super::{ENEMY_COUNT, ENEMY_SIZE, ENEMY_SPEED};
+use super::{ENEMY_COUNT, ENEMY_SIZE, ENEMY_SPEED, DEFAULT_EXPERINCE_DROP_VALUE};
 
 #[derive(Component, Deref, DerefMut)]
 pub struct AnimationTimer(Timer);
@@ -170,9 +172,11 @@ pub fn wave_timer_tracking_system(
 }
 
 pub fn kill_enemy(
-    mut commands: Commands,
     enemy_query: Query<Entity, With<Enemy>>,
+    mut app_state_next_state: ResMut<NextState<AppState>>,
+    mut commands: Commands,
     mut death_event_reader: EventReader<DeathEvent>,
+    mut game_simulation_next_state: ResMut<NextState<GameSimulationState>>,
     mut player_query: Query<&mut Player>,
 ) {
     if death_event_reader.is_empty() {
@@ -184,14 +188,20 @@ pub fn kill_enemy(
             continue;
         }
 
-        if let Ok(mut player) = player_query.get_single_mut() {
-            player.give_exp(50);
+        commands.entity(event.entity).despawn();
+    }
 
-            if player.get_level() > 4 {
-                player.give_exp(20);
-            }
+    if let Ok(mut player) = player_query.get_single_mut() {
+        player.give_exp(DEFAULT_EXPERINCE_DROP_VALUE);
+
+        // TODO: add proper level scaling
+        if player.get_level() > 4 {
+            player.give_exp(20);
         }
 
-        commands.entity(event.entity).despawn();
+        // TODO: refactor to event(for example: LvlUpEvent)
+        if player.get_experience_amount() >= EXPERIENCE_THRESHOLD {
+            player.lvl_up(app_state_next_state, game_simulation_next_state);
+        }
     }
 }

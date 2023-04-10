@@ -23,6 +23,7 @@ impl Player {
 
         if self.experience >= EXPERIENCE_THRESHOLD {
             self.level += 1;
+            self.experience = 0;
             return true;
         }
         return true;
