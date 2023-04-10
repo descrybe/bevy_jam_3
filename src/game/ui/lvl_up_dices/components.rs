@@ -6,3 +6,6 @@ use crate::game::player::events::Modification;
 pub struct DiceButton {
     pub value: Modification,
 }
+
+#[derive(Component)]
+pub struct LvlUpText {}

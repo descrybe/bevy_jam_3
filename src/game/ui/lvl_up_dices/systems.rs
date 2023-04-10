@@ -1,6 +1,6 @@
-use bevy::prelude::*;
+use bevy::{prelude::*, window::PrimaryWindow};
 
-use super::components::DiceButton;
+use super::components::{DiceButton, LvlUpText};
 use crate::{
     game::{
         player::{
@@ -18,10 +18,12 @@ pub const CHOOSE_DICE_ENTITY_SIZE: f32 = 150.0;
 pub fn spawn_lvlup_dices(
     asset_server: Res<AssetServer>,
     player_query: Query<&Transform, With<Player>>,
+    window_query: Query<&Window, With<PrimaryWindow>>,
     mut commands: Commands,
     mut texture_atlases: ResMut<Assets<TextureAtlas>>,
 ) {
     let player_transform = player_query.get_single().unwrap();
+    let window = window_query.get_single().unwrap();
 
     let texture_handle = asset_server.load("sprites/dice_sides.png");
     // let texture_atlas = TextureAtlas::from_grid(
@@ -42,16 +44,19 @@ pub fn spawn_lvlup_dices(
         color: Color::WHITE,
     };
 
-    commands.spawn(Text2dBundle {
-        text: Text::from_section("Choose modification!", text_style.clone())
-            .with_alignment(text_alignment),
-        transform: Transform::from_xyz(
-            player_transform.translation.x,
-            player_transform.translation.y + 130.0,
-            10.0,
-        ),
-        ..default()
-    });
+    commands.spawn((
+        Text2dBundle {
+            text: Text::from_section("Choose modification!", text_style.clone())
+                .with_alignment(text_alignment),
+            transform: Transform::from_xyz(
+                player_transform.translation.x,
+                player_transform.translation.y + 130.0,
+                10.0,
+            ),
+            ..default()
+        },
+        LvlUpText {},
+    ));
 
     for index in 0..3 {
         commands.spawn((
@@ -63,14 +68,14 @@ pub fn spawn_lvlup_dices(
                 style: Style {
                     position_type: PositionType::Absolute,
                     position: UiRect {
-                        top: Val::Px(player_transform.translation.y - 200.0),
-                        left: Val::Px(
-                            player_transform.translation.x - 100.0 + ((index - 1) as f32) * 200.0,
-                        ),
+                        top: Val::Px(window.height() / 2.0),
+                        left: Val::Px(window.width() / 2.0),
+                        // top: Val::Px(player_transform.translation.y - 200.0),
+                        // left: Val::Px(player_transform.translation.x - 100.0 + ((index - 1) as f32) * 200.0),
                         right: Val::Auto,
                         bottom: Val::Auto,
                     },
-                    justify_content: JustifyContent::Center,
+                    justify_content: JustifyContent::SpaceBetween,
                     align_items: AlignItems::Center,
                     size: Size::new(
                         Val::Px(CHOOSE_DICE_ENTITY_SIZE),
@@ -114,8 +119,12 @@ pub fn lvlup_dice_interaction(
 pub fn despawn_lvlup_dices(
     mut commands: Commands,
     mut dice_buttons_query: Query<Entity, With<DiceButton>>,
+    lvl_up_text_query: Query<Entity, With<LvlUpText>>,
 ) {
     for entity in dice_buttons_query.iter_mut() {
         commands.entity(entity).despawn();
     }
+
+    let lvl_up_text = lvl_up_text_query.get_single().unwrap();    
+    commands.entity(lvl_up_text).despawn();
 }
