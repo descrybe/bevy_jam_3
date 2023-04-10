@@ -22,7 +22,7 @@ impl Plugin for UIPlugin {
             .add_system(spawn_health_bar.in_schedule(OnExit(AppState::MainMenu)))
             .add_system(spawn_exp_bar.in_schedule(OnExit(AppState::MainMenu)))
             .add_system(spawn_preview_dices.in_schedule(OnExit(AppState::MainMenu)))
-            // .add_plugin(PauseMenuPlugin)
+            .add_plugin(PauseMenuPlugin)
             .add_plugin(LvlUpPlugin)
             .add_systems(
                 (

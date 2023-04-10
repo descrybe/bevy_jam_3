@@ -37,31 +37,6 @@ pub fn camera_follow(
         camera.translation.y = player.translation.y;
     }
 }
-
-pub fn set_game_active(
-    keyboard_input: Res<Input<KeyCode>>,
-    app_state: Res<State<AppState>>,
-    mut app_state_next_state: ResMut<NextState<AppState>>,
-) {
-    if keyboard_input.just_pressed(KeyCode::Escape) {
-        if app_state.0 != AppState::Game {
-            app_state_next_state.set(AppState::Game);
-        }
-    }
-}
-
-pub fn set_main_menu_active(
-    keyboard_input: Res<Input<KeyCode>>,
-    app_state: Res<State<AppState>>,
-    mut app_state_next_state: ResMut<NextState<AppState>>,
-) {
-    if keyboard_input.just_pressed(KeyCode::Escape) {
-        if app_state.0 != AppState::MainMenu {
-            app_state_next_state.set(AppState::MainMenu);
-        }
-    }
-}
-
 pub fn game_over_hander(mut game_over_event_writer: EventReader<GameOver>) {
     for _ in game_over_event_writer.iter() {
         println!("Game over!");
