@@ -106,6 +106,7 @@ pub fn toggle_game_status(
 }
 
 pub fn main_menu_setup(commands: &mut Commands, asset_server: &Res<AssetServer>) -> Entity {
+    let texture_handle = asset_server.load("sprites/button.png");
     let main_menu_entity = commands
         .spawn((
             NodeBundle {
@@ -114,7 +115,7 @@ pub fn main_menu_setup(commands: &mut Commands, asset_server: &Res<AssetServer>)
                     justify_content: JustifyContent::Center,
                     align_items: AlignItems::Center,
                     size: Size::new(Val::Percent(100.0), Val::Percent(100.0)),
-                    gap: Size::new(Val::Px(8.0), Val::Px(8.0)),
+                    gap: Size::new(Val::Px(8.0), Val::Px(15.0)),
                     ..default()
                 },
                 ..default()
@@ -134,10 +135,17 @@ pub fn main_menu_setup(commands: &mut Commands, asset_server: &Res<AssetServer>)
                     parent.spawn(TextBundle {
                         text: Text {
                             sections: vec![TextSection::new(
-                                "NAZVANIE NE PRIDUMALI",
+                                "SIDE EFFECT SOMETHING",
                                 get_text_style(asset_server, 60.0),
                             )],
                             alignment: TextAlignment::Center,
+                            ..default()
+                        },
+                        style: Style {
+                            margin: UiRect {
+                                bottom: Val::Px(30.0),
+                                ..default()
+                            },
                             ..default()
                         },
                         ..default()
@@ -147,6 +155,10 @@ pub fn main_menu_setup(commands: &mut Commands, asset_server: &Res<AssetServer>)
             parent
                 .spawn((
                     ButtonBundle {
+                        image: UiImage {
+                            texture: texture_handle.clone(),
+                            ..default()
+                        },
                         style: DEFAULT_BUTTON_STYLE,
                         background_color: NORMAL_BUTTON_COLOR.into(),
                         ..default()
@@ -170,6 +182,10 @@ pub fn main_menu_setup(commands: &mut Commands, asset_server: &Res<AssetServer>)
             parent
                 .spawn((
                     ButtonBundle {
+                        image: UiImage {
+                            texture: texture_handle.clone(),
+                            ..default()
+                        },
                         style: DEFAULT_BUTTON_STYLE,
                         background_color: NORMAL_BUTTON_COLOR.into(),
                         ..default()
@@ -193,6 +209,10 @@ pub fn main_menu_setup(commands: &mut Commands, asset_server: &Res<AssetServer>)
             parent
                 .spawn((
                     ButtonBundle {
+                        image: UiImage {
+                            texture: texture_handle.clone(),
+                            ..default()
+                        },
                         style: DEFAULT_BUTTON_STYLE,
                         background_color: NORMAL_BUTTON_COLOR.into(),
                         ..default()
