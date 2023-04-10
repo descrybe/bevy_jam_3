@@ -171,6 +171,12 @@ pub fn wave_timer_tracking_system(
     wave_event.send(WaveSpawnEvent {});
 }
 
+pub fn flip_enemy_sprite(mut query: Query<(&DirectionHolderComponent, &mut Sprite), With<Enemy>>) {
+    for (direction_holder, mut sprite) in query.iter_mut() {
+        sprite.flip_x = direction_holder.direction.normalize_or_zero().x > 0.0;
+    }
+}
+
 pub fn kill_enemy(
     enemy_query: Query<Entity, With<Enemy>>,
     mut app_state_next_state: ResMut<NextState<AppState>>,
