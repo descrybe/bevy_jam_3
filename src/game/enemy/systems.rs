@@ -3,9 +3,6 @@ use std::ops::{Add, Sub};
 use bevy::{prelude::*, window::PrimaryWindow};
 use rand::prelude::random;
 
-use crate::AppState;
-use crate::assets_cache::resources::AssetsCache;
-use crate::game::GameSimulationState;
 use crate::game::collision::components::{Collidable, CollisionData, Solid};
 use crate::game::damage::components::DamageDealerComponent;
 use crate::game::health::components::HealthComponent;
@@ -14,11 +11,13 @@ use crate::game::player::components::{Player, EXPERIENCE_THRESHOLD};
 use crate::game::random_position::screen_edge_position_generator::ScreenEdgePositionGenerator;
 use crate::game::random_position::{Point, PositionGenerator, StraightLine};
 use crate::game::target::components::{DirectionHolderComponent, TargetHolderComponent};
+use crate::game::GameSimulationState;
+use crate::AppState;
 
 use super::events::WaveSpawnEvent;
 use super::resources::EnemyWavesSpawnConfig;
 use super::{components::*, ENEMY_DAMAGE, ENEMY_HEALTH};
-use super::{ENEMY_COUNT, ENEMY_SIZE, ENEMY_SPEED, DEFAULT_EXPERINCE_DROP_VALUE};
+use super::{DEFAULT_EXPERINCE_DROP_VALUE, ENEMY_COUNT, ENEMY_SIZE, ENEMY_SPEED};
 
 #[derive(Component, Deref, DerefMut)]
 pub struct AnimationTimer(Timer);
@@ -104,7 +103,6 @@ pub fn spawn_enemie_wave(
                 sprite: TextureAtlasSprite {
                     index: sprite_index,
                     custom_size: Option::Some(Vec2::new(ENEMY_SIZE, ENEMY_SIZE)),
-                    flip_x: true,
                     ..default()
                 },
                 transform: Transform::from_translation(translated_position),
@@ -171,7 +169,9 @@ pub fn wave_timer_tracking_system(
     wave_event.send(WaveSpawnEvent {});
 }
 
-pub fn flip_enemy_sprite(mut query: Query<(&DirectionHolderComponent, &mut Sprite), With<Enemy>>) {
+pub fn flip_enemy_sprite(
+    mut query: Query<(&DirectionHolderComponent, &mut TextureAtlasSprite), With<Enemy>>,
+) {
     for (direction_holder, mut sprite) in query.iter_mut() {
         sprite.flip_x = direction_holder.direction.normalize_or_zero().x > 0.0;
     }
