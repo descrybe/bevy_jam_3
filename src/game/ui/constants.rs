@@ -8,8 +8,6 @@ pub const EXPREIENCE_BAR_MAIN_COLOR: Color = Color::rgb(0.85, 0.0, 0.85);
 pub const EXPREIENCE_BAR_BACKGROUND_COLOR: Color = Color::rgb(0.25, 0.8, 1.0);
 pub const EXPERIENCE_BAR_BORDER_COLOR: Color = Color::rgb(0.65, 0.65, 0.65);
 const EXPERIENCE_BAR_HEIGHT: Val = Val::Px(35.0);
-pub const PLAYER_HEALTH_BAR_WIDTH:Val = Val::Px(100.0);
-pub const PLAYER_HEALTH_BAR_HEIGHT:Val = Val::Px(10.0);
 
 pub const EXPERIENCE_BAR_WRAPPER_STYLES: Style = Style {
     // size: Size {

@@ -6,11 +6,10 @@ use bevy::window::PrimaryWindow;
 use super::components::*;
 use crate::events::*;
 use crate::game::player::components::*;
-use crate::AppState;
 
 pub fn spawn_camera(mut commands: Commands, window_query: Query<&Window, With<PrimaryWindow>>) {
     let window = window_query.get_single().unwrap();
-    let camera_position = Transform::from_xyz(window.width() / 2.0, window.height() / 2.0, 100.0);
+    let camera_position = Transform::from_xyz(window.width() / 2.0, window.height() / 2.0, 999.0);
 
     commands.spawn((
         Camera2dBundle {

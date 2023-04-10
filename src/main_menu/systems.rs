@@ -238,7 +238,7 @@ pub fn spawn_menu_bg(
                 custom_size: Option::Some(Vec2::new(window.width(), window.height())),
                 ..default()
             },
-            transform: Transform::from_xyz(window.width() / 2.0, window.height() / 2.0, -1.0),
+            transform: Transform::from_xyz(window.width() / 2.0, window.height() / 2.0, 1.0),
             ..default()
         },
         MenuBackground {}

@@ -14,7 +14,7 @@ use main_menu::MainMenuPlugin;
 use events::*;
 use systems::*;
 
-use bevy::{prelude::*, window::*};
+use bevy::{prelude::*, window::WindowMode};
 
 fn main() {
     App::new()

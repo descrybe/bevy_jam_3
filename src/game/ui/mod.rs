@@ -1,9 +1,10 @@
 mod constants;
 mod dices_preview;
 mod experience_ui;
+mod lvl_up_dices;
 mod pause_menu;
 mod player_health_bar;
-mod lvl_up_dices;
+mod tilemap;
 
 use super::GameSimulationState;
 use crate::AppState;
@@ -13,12 +14,13 @@ use experience_ui::*;
 use lvl_up_dices::*;
 use pause_menu::*;
 use player_health_bar::*;
+use tilemap::*;
 
 pub struct UIPlugin;
 
 impl Plugin for UIPlugin {
     fn build(&self, app: &mut App) {
-        app
+        app.add_system(spawn_simple_map.in_schedule(OnExit(AppState::MainMenu)))
             .add_system(spawn_health_bar.in_schedule(OnExit(AppState::MainMenu)))
             .add_system(spawn_exp_bar.in_schedule(OnExit(AppState::MainMenu)))
             .add_system(spawn_preview_dices.in_schedule(OnExit(AppState::MainMenu)))
@@ -30,7 +32,6 @@ impl Plugin for UIPlugin {
                     stick_exp_bar,
                     stick_first_dice,
                     stick_second_dice,
-                    // setup_game_bg,
                 )
                     .in_set(OnUpdate(AppState::Game))
                     .in_set(OnUpdate(GameSimulationState::Running)),
