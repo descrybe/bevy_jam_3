@@ -81,7 +81,7 @@ pub fn spawn_health_bar(
                     ..default()
                 },
                 background_color: Color::rgb(1.0, 0.0, 0.0).into(),
-                transform: Transform::from_xyz(28.0, 0.0, 10.0),
+                transform: Transform::from_xyz(0.0, 0.0, 3.0),
                 ..default()
             },
             HealthBar {},

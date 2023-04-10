@@ -5,7 +5,7 @@ pub enum Modification {
     Radiance,
     Splash,
     Stars,
-    Lightning
+    Lightning,
 }
 
 pub struct ChooseModificationEvent {

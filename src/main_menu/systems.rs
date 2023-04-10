@@ -1,5 +1,6 @@
 use bevy::app::AppExit;
 use bevy::prelude::*;
+use bevy::window::PrimaryWindow;
 use bevy_kira_audio::{Audio, AudioControl};
 
 use crate::main_menu::components::MainMenu;
@@ -218,43 +219,37 @@ pub fn main_menu_setup(commands: &mut Commands, asset_server: &Res<AssetServer>)
 }
 
 #[derive(Component)]
-pub struct Max;
+pub struct MenuBackground;
 
-pub fn setup_bg(mut commands: Commands, asset_server: Res<AssetServer>) {
+pub fn spawn_menu_bg(
+    mut commands: Commands, 
+    asset_server: Res<AssetServer>,
+    window_query: Query<&Window, With<PrimaryWindow>>,
+) {
     let texture_handle = asset_server.load("sprites/menu_background.png");
+    let window = window_query.get_single().unwrap();
 
     commands.spawn((
         SpriteBundle {
             texture: texture_handle.into(),
-            ..Default::default()
+            sprite: Sprite {
+                custom_size: Option::Some(Vec2::new(window.width(), window.height())),
+                ..default()
+            },
+            transform: Transform::from_xyz(window.width() / 2.0, window.height() / 2.0, -1.0),
+            ..default()
         },
-        Max {},
+        MenuBackground {}
     ));
 }
 
-// TODO: change functions names, fix coordinates
-// fix game crash
-pub fn move_max(
-    keyboard_input: Res<Input<KeyCode>>,
-    mut max_positions: Query<&mut Transform, With<Max>>,
-) {
-    for mut transform in max_positions.iter_mut() {
-        if keyboard_input.pressed(KeyCode::Left) {
-            transform.translation.x -= 1.0;
-        }
-        if keyboard_input.pressed(KeyCode::Right) {
-            transform.translation.x += 1.0;
-        }
-        if keyboard_input.pressed(KeyCode::Down) {
-            transform.translation.y -= 1.0;
-        }
-        if keyboard_input.pressed(KeyCode::Up) {
-            transform.translation.y += 1.0;
-        }
-    }
+pub fn despawn_menu_bg(mut commands: Commands, mut bg_query: Query<Entity, With<MenuBackground>>) {
+    let menu_bg = bg_query.get_single().unwrap();
+    commands.entity(menu_bg).despawn();
 }
 
-pub fn spawn_audio(
+
+pub fn start_menu_audio(
     app_state: Res<State<AppState>>,
     audio: Res<Audio>,
     asset_server: Res<AssetServer>,
@@ -265,9 +260,7 @@ pub fn spawn_audio(
 
     if app_state.0 == AppState::MainMenu {
         audio.play(audio_track).looped();
-        println!("meun state");
     } else if app_state.0 == AppState::Game {
-        println!("game state");
         audio.pause();
     }
 }

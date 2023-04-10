@@ -20,7 +20,7 @@ fn main() {
     App::new()
         .add_plugins(DefaultPlugins.set(WindowPlugin {
             primary_window: Some(Window {
-                resolution: WindowResolution::new(1366., 768.),
+                mode: WindowMode::Fullscreen,
                 title: "Side Effect".to_string(),
                 ..default()
             }),
