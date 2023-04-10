@@ -21,17 +21,17 @@ pub mod ui;
 
 use bevy::prelude::*;
 
-use bullet::BulletPlugin;
+// use bullet::BulletPlugin;
 use enemy::EnemyPlugin;
 use flight::FirePlugin;
 use lighting::LightingPlugin;
 use player::PlayerPlugin;
 use player_binder::PlayerBinderPlugin;
-use radiance::RadiancePlugin;
+// use radiance::RadiancePlugin;
 use rotator::RotatorPlugin;
 use sattlite::SattelitePlugin;
 use score::ScorePlugin;
-use shuriken::ShurikenPlugin;
+// use shuriken::ShurikenPlugin;
 use systems::*;
 use ui::UIPlugin;
 
@@ -57,7 +57,7 @@ impl Plugin for GamePlugin {
             .add_plugin(ScorePlugin)
             .add_plugin(RandomPositionPlugin)
             .add_plugin(TargetPlugin)
-            .add_plugin(BulletPlugin)
+            // .add_plugin(BulletPlugin)
             .add_plugin(FirePlugin)
             .add_plugin(RotatorPlugin)
             .add_plugin(UIPlugin)
@@ -66,10 +66,10 @@ impl Plugin for GamePlugin {
             .add_plugin(HealthPlugin)
             .add_plugin(DamagePlugin)
             .add_plugin(LightingPlugin)
-            .add_plugin(ShurikenPlugin)
+            // .add_plugin(ShurikenPlugin)
             .add_plugin(SattelitePlugin)
             .add_plugin(MovementPlugin)
-            .add_plugin(RadiancePlugin)
+            // .add_plugin(RadiancePlugin)
             .add_plugin(PlayerBinderPlugin)
             .add_system(set_game_running.in_schedule(OnEnter(AppState::Game)))
             .add_system(toggle_game_running_state.run_if(in_state(AppState::Game)));

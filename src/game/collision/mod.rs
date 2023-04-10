@@ -8,7 +8,7 @@ use self::{events::CollisionEvent, systems::*};
 
 use super::{
     bullet::components::Bullet, enemy::components::Enemy, player::components::Player,
-    radiance::components::Radiance, shuriken::components::Shuriken,
+    radiance::components::Radiance, shuriken::components::Shuriken, lighting::components::Lighting,
 };
 
 pub struct CollisionPlugin;
@@ -22,6 +22,7 @@ impl Plugin for CollisionPlugin {
                     collision_detection_system::<Bullet, Enemy>,
                     collision_detection_system::<Radiance, Enemy>,
                     collision_detection_system::<Shuriken, Enemy>,
+                    collision_detection_system::<Lighting, Enemy>,
                     collision_detection_system::<Player, Enemy>,
                     internal_collision_detection_system::<Enemy>,
                 )
