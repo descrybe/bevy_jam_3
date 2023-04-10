@@ -23,7 +23,6 @@ impl Plugin for MainMenuPlugin {
                 )
                     .in_set(OnUpdate(AppState::MainMenu)),
             )
-            .add_system(toggle_game_status.run_if(in_state(AppState::MainMenu)))
             .add_system(spawn_menu_bg.in_schedule(OnEnter(AppState::MainMenu)))
             .add_system(despawn_menu_bg.in_schedule(OnExit(AppState::MainMenu)))
             .add_system(despawn_main_menu.in_schedule(OnExit(AppState::MainMenu)));

@@ -87,24 +87,6 @@ pub fn despawn_main_menu(mut commands: Commands, main_menu_query: Query<Entity, 
     }
 }
 
-pub fn toggle_game_status(
-    mut game_status_state: ResMut<NextState<AppState>>,
-    simulation_state: Res<State<AppState>>,
-    keyboard_input: Res<Input<KeyCode>>,
-) {
-    if keyboard_input.just_pressed(KeyCode::Escape) {
-        let concrete_simultation_state = simulation_state.0;
-
-        match concrete_simultation_state {
-            AppState::Game => game_status_state.set(AppState::Game),
-            AppState::MainMenu => game_status_state.set(AppState::MainMenu),
-            AppState::GameOver => game_status_state.set(AppState::GameOver),
-            AppState::LvlUp => game_status_state.set(AppState::LvlUp),
-            AppState::PauseMenu => game_status_state.set(AppState::PauseMenu),
-        }
-    }
-}
-
 pub fn main_menu_setup(commands: &mut Commands, asset_server: &Res<AssetServer>) -> Entity {
     let texture_handle = asset_server.load("sprites/button.png");
     let main_menu_entity = commands
