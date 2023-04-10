@@ -27,7 +27,7 @@ use flight::FirePlugin;
 use lighting::LightingPlugin;
 use player::PlayerPlugin;
 use player_binder::PlayerBinderPlugin;
-use radiance::RadiancePlugin;
+// use radiance::RadiancePlugin;
 use rotator::RotatorPlugin;
 use sattlite::SattelitePlugin;
 use score::ScorePlugin;
@@ -69,7 +69,7 @@ impl Plugin for GamePlugin {
             .add_plugin(ShurikenPlugin)
             .add_plugin(SattelitePlugin)
             .add_plugin(MovementPlugin)
-            .add_plugin(RadiancePlugin)
+            // .add_plugin(RadiancePlugin)
             .add_plugin(PlayerBinderPlugin)
             .add_system(set_game_running.in_schedule(OnEnter(AppState::Game)))
             .add_system(toggle_game_running_state.run_if(in_state(AppState::Game)));

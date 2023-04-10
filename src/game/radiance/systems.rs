@@ -116,7 +116,7 @@ pub fn spawn_radiance(
                     ..default()
                 },
                 transform: source_copy,
-                texture: asset_service.sprites.projectiles.bottle.clone(),
+                // texture: asset_service.sprites.projectiles.bottle.clone(),
                 ..default()
             },
             Radiance {},
