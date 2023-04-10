@@ -3,12 +3,14 @@ mod dices_preview;
 mod experience_ui;
 mod pause_menu;
 mod player_health_bar;
+mod lvl_up_dices;
 
 use super::GameSimulationState;
 use crate::AppState;
 use bevy::prelude::*;
 use dices_preview::*;
 use experience_ui::*;
+use lvl_up_dices::*;
 use pause_menu::*;
 use player_health_bar::*;
 
@@ -21,9 +23,10 @@ impl Plugin for UIPlugin {
             .add_system(spawn_exp_bar.in_schedule(OnExit(AppState::MainMenu)))
             .add_system(spawn_preview_dices.in_schedule(OnExit(AppState::MainMenu)))
             // .add_plugin(PauseMenuPlugin)
+            .add_plugin(LvlUpPlugin)
             .add_systems(
                 (
-                    stick_health_bar_to_player,
+                    update_health_bar_params,
                     stick_exp_bar,
                     stick_first_dice,
                     stick_second_dice,

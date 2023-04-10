@@ -97,7 +97,9 @@ pub fn toggle_game_status(
         match concrete_simultation_state {
             AppState::Game => game_status_state.set(AppState::Game),
             AppState::MainMenu => game_status_state.set(AppState::MainMenu),
-            AppState::GameOver => {}
+            AppState::GameOver => game_status_state.set(AppState::GameOver),
+            AppState::LvlUp => game_status_state.set(AppState::LvlUp),
+            AppState::PauseMenu => game_status_state.set(AppState::PauseMenu),
         }
     }
 }

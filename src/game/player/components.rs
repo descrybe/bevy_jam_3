@@ -1,4 +1,6 @@
-use bevy::prelude::Component;
+use bevy::prelude::{Component, NextState, ResMut};
+
+use crate::{game::GameSimulationState, AppState};
 
 pub const EXPERIENCE_THRESHOLD: usize = 10000;
 
@@ -21,11 +23,19 @@ impl Player {
     pub fn give_exp(&mut self, exp: usize) -> bool {
         self.experience += exp;
 
-        if self.experience >= EXPERIENCE_THRESHOLD {
-            self.level += 1;
-            self.experience = 0;
-            return true;
-        }
+        return true;
+    }
+
+    pub fn lvl_up(
+        &mut self,
+        mut app_state_next_state: ResMut<NextState<AppState>>,
+        mut game_simulation_next_state: ResMut<NextState<GameSimulationState>>,
+    ) -> bool {
+        self.level += 1;
+        self.experience = 0;
+        game_simulation_next_state.set(GameSimulationState::Paused);
+        app_state_next_state.set(AppState::LvlUp);
+        
         return true;
     }
 }

@@ -3,8 +3,8 @@ use crate::game::player::components::Player;
 use super::constants::*;
 use bevy::{prelude::*, window::PrimaryWindow};
 
-const DICE_DIMENTION_SPRITE_SIZE: f32 = 202.0;
-const DICE_DIMENTION_ENTITY_SIZE: f32 = 45.0;
+pub const DICE_DIMENTION_SPRITE_SIZE: f32 = 202.0;
+pub const DICE_DIMENTION_ENTITY_SIZE: f32 = 45.0;
 
 #[derive(Component)]
 pub struct FirstDicePreview {}
@@ -50,6 +50,7 @@ pub fn spawn_preview_dices(
                 )),
                 ..default()
             },
+            transform: Transform::from_xyz(0.0, 0.0, 5.0),
             ..default()
         },
         FirstDicePreview {},
@@ -66,6 +67,7 @@ pub fn spawn_preview_dices(
                 )),
                 ..default()
             },
+            transform: Transform::from_xyz(0.0, 0.0, 5.0),
             ..default()
         },
         SecondDicePreview {},
