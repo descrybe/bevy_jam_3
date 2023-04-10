@@ -12,7 +12,7 @@ use crate::{
             components::{DamageDealerComponent, SelfDestructable},
             events::DamageEvent,
         },
-        flight::resources::FireSpawnConfig,
+        flight::resources::FireSpawnConfig, collision::components::{Collidable, CollisionData},
     },
 };
 
@@ -72,8 +72,18 @@ fn spawn_lightning_bolt(
             TargetHolderComponent {
                 target_entity: target_entity,
             },
-            DamageDealerComponent { damage: 1000 },
+            DamageDealerComponent { damage: 150 },
             SelfDestructable::new(1.0),
+            Collidable {
+                size: Vec2 {
+                    x: 100.0,
+                    y: 100.0,
+                },
+                collision: CollisionData {
+                    is_collided: false,
+                    collision_side: Vec::new(),
+                },
+            },
         ))
         .id();
 
