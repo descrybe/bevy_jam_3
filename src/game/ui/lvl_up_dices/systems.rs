@@ -1,7 +1,9 @@
-use bevy::{prelude::*, window::PrimaryWindow};
+use bevy::prelude::*;
 
-use super::components::{DiceButton, LvlUpText};
+use super::components::{DiceButton, LvlUpHolder, LvlUpText};
 use crate::{
+    assets_cache::resources::AssetsCache,
+    dice::resources::{DiceRoller, DiceService},
     game::{
         player::{
             components::Player,
@@ -13,28 +15,14 @@ use crate::{
     AppState,
 };
 
-pub const CHOOSE_DICE_ENTITY_SIZE: f32 = 150.0;
-
 pub fn spawn_lvlup_dices(
     asset_server: Res<AssetServer>,
     player_query: Query<&Transform, With<Player>>,
-    window_query: Query<&Window, With<PrimaryWindow>>,
     mut commands: Commands,
-    mut texture_atlases: ResMut<Assets<TextureAtlas>>,
+    mut dice_service: ResMut<DiceService>,
+    asset_cache: Res<AssetsCache>,
 ) {
     let player_transform = player_query.get_single().unwrap();
-    let window = window_query.get_single().unwrap();
-
-    let texture_handle = asset_server.load("sprites/dice_sides.png");
-    // let texture_atlas = TextureAtlas::from_grid(
-    //     texture_handle,
-    //     Vec2::new(DICE_DIMENTION_SPRITE_SIZE, DICE_DIMENTION_SPRITE_SIZE),
-    //     2,
-    //     3,
-    //     None,
-    //     None,
-    // );
-    // let texture_atlas_handle = texture_atlases.add(texture_atlas);
     let font = asset_server.load("fonts/CyrillicPixel.ttf");
     let text_alignment = TextAlignment::Center;
 
@@ -43,6 +31,33 @@ pub fn spawn_lvlup_dices(
         font_size: 50.0,
         color: Color::WHITE,
     };
+
+    let dices_cache = &asset_cache.sprites.ui.dices;
+    let dice_images: Vec<Handle<Image>> = vec![
+        dices_cache.bottle.clone(),
+        dices_cache.heart.clone(),
+        dices_cache.radiance.clone(),
+        dices_cache.flame.clone(),
+        dices_cache.shuriken.clone(),
+        dices_cache.lightning.clone(),
+    ];
+
+    let modifications = vec![
+        Modification::AutoAttack,
+        Modification::Health,
+        Modification::Radiance,
+        Modification::Splash,
+        Modification::Stars,
+        Modification::Lightning,
+    ];
+
+    let rolled_values_u16 = dice_service
+        .roll_few_times(crate::dice::resources::EDice::D6, 3)
+        .unwrap();
+
+    let roll_result = rolled_values_u16
+        .iter()
+        .map(|result| usize::try_from(*result).unwrap());
 
     commands.spawn((
         Text2dBundle {
@@ -58,56 +73,76 @@ pub fn spawn_lvlup_dices(
         LvlUpText {},
     ));
 
-    for _index in 0..3 {
-        commands.spawn((
-            ButtonBundle {
-                image: UiImage {
-                    texture: texture_handle.clone(),
+    commands
+        .spawn((
+            NodeBundle {
+                style: Style {
+                    size: Size::width(Val::Percent(100.0)),
+                    align_items: AlignItems::Center,
+                    justify_content: JustifyContent::Center,
                     ..default()
                 },
-                style: Style {
-                    position_type: PositionType::Absolute,
-                    position: UiRect {
-                        top: Val::Px(window.height() / 2.0),
-                        left: Val::Px(window.width() / 2.0),
-                        // top: Val::Px(player_transform.translation.y - 200.0),
-                        // left: Val::Px(player_transform.translation.x - 100.0 + ((index - 1) as f32) * 200.0),
-                        right: Val::Auto,
-                        bottom: Val::Auto,
-                    },
-                    justify_content: JustifyContent::SpaceBetween,
-                    align_items: AlignItems::Center,
-                    size: Size::new(
-                        Val::Px(CHOOSE_DICE_ENTITY_SIZE),
-                        Val::Px(CHOOSE_DICE_ENTITY_SIZE),
-                    ),
-                    ..Style::DEFAULT
-                },
-                transform: Transform::from_xyz(0.0, 0.0, 20.0),
                 ..default()
             },
-            DiceButton {
-                value: Modification::AutoAttack,
-            },
-        ));
-    }
+            LvlUpHolder {},
+        ))
+        .with_children(|builder| {
+            builder
+                .spawn(NodeBundle {
+                    style: Style {
+                        flex_direction: FlexDirection::Row,
+                        justify_content: JustifyContent::Center,
+                        align_items: AlignItems::Center,
+                        ..default()
+                    },
+                    ..default()
+                })
+                .with_children(|column| {
+                    for roll in roll_result {
+                        column.spawn((
+                            ButtonBundle {
+                                image: UiImage::new(dice_images[roll - 1].clone()),
+                                style: Style {
+                                    margin: UiRect {
+                                        left: Val::Px(5.0),
+                                        right: Val::Px(5.0),
+                                        ..default()
+                                    },
+                                    size: Size::new(
+                                        Val::Px(DICE_DIMENTION_SPRITE_SIZE),
+                                        Val::Px(DICE_DIMENTION_SPRITE_SIZE),
+                                    ),
+                                    ..default()
+                                },
+
+                                ..default()
+                            },
+                            DiceButton {
+                                value: modifications[roll - 1],
+                            },
+                        ));
+                    }
+                });
+        });
 }
 
 pub fn lvlup_dice_interaction(
-    mut interaction_query: Query<&Interaction, (Changed<Interaction>, With<DiceButton>)>,
+    mut interaction_query: Query<
+        (&Interaction, &DiceButton),
+        (Changed<Interaction>, With<DiceButton>),
+    >,
     mut modification_choose_event: EventWriter<ChooseModificationEvent>,
     mut app_state_next_state: ResMut<NextState<AppState>>,
     mut game_simulation_next_state: ResMut<NextState<GameSimulationState>>,
 ) {
-    for interaction in &mut interaction_query {
+    for (interaction, button) in &mut interaction_query {
         match *interaction {
             Interaction::Clicked => {
-                // TODO: fixed from state to events
                 game_simulation_next_state.set(GameSimulationState::Running);
                 app_state_next_state.set(AppState::Game);
 
                 modification_choose_event.send(ChooseModificationEvent {
-                    modification: Modification::AutoAttack,
+                    modification: button.value,
                 });
             }
             Interaction::Hovered => {}
@@ -118,13 +153,14 @@ pub fn lvlup_dice_interaction(
 
 pub fn despawn_lvlup_dices(
     mut commands: Commands,
-    mut dice_buttons_query: Query<Entity, With<DiceButton>>,
+    mut dice_buttons_query: Query<Entity, With<LvlUpHolder>>,
     lvl_up_text_query: Query<Entity, With<LvlUpText>>,
 ) {
     for entity in dice_buttons_query.iter_mut() {
-        commands.entity(entity).despawn();
+        commands.entity(entity).despawn_recursive();
     }
 
-    let lvl_up_text = lvl_up_text_query.get_single().unwrap();    
-    commands.entity(lvl_up_text).despawn();
+    for lvl_up_text in lvl_up_text_query.iter() {
+        commands.entity(lvl_up_text).despawn();
+    }
 }

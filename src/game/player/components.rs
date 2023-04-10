@@ -35,7 +35,7 @@ impl Player {
         self.experience = 0;
         game_simulation_next_state.set(GameSimulationState::Paused);
         app_state_next_state.set(AppState::LvlUp);
-        
+
         return true;
     }
 }

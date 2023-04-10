@@ -58,7 +58,7 @@ impl DiceRoller for DiceService {
 
     fn roll_few_times(&mut self, dice_type: EDice, number_of_rolls: u64) -> Option<Vec<u16>> {
         let mut result = Vec::new();
-        for _ in 1..number_of_rolls {
+        for _ in 1..(number_of_rolls + 1) {
             let single_roll_result = self.roll(dice_type)?;
             result.push(single_roll_result);
         }

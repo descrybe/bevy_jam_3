@@ -9,3 +9,6 @@ pub struct DiceButton {
 
 #[derive(Component)]
 pub struct LvlUpText {}
+
+#[derive(Component)]
+pub struct LvlUpHolder;
