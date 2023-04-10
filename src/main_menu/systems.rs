@@ -1,5 +1,7 @@
 use bevy::app::AppExit;
 use bevy::prelude::*;
+use bevy::window::PrimaryWindow;
+use bevy_kira_audio::{Audio, AudioControl};
 
 use crate::main_menu::components::MainMenu;
 use crate::AppState;
@@ -96,7 +98,9 @@ pub fn toggle_game_status(
         match concrete_simultation_state {
             AppState::Game => game_status_state.set(AppState::Game),
             AppState::MainMenu => game_status_state.set(AppState::MainMenu),
-            AppState::GameOver => {}
+            AppState::GameOver => game_status_state.set(AppState::GameOver),
+            AppState::LvlUp => game_status_state.set(AppState::LvlUp),
+            AppState::PauseMenu => game_status_state.set(AppState::PauseMenu),
         }
     }
 }
@@ -212,4 +216,51 @@ pub fn main_menu_setup(commands: &mut Commands, asset_server: &Res<AssetServer>)
         .id();
 
     return main_menu_entity;
+}
+
+#[derive(Component)]
+pub struct MenuBackground;
+
+pub fn spawn_menu_bg(
+    mut commands: Commands, 
+    asset_server: Res<AssetServer>,
+    window_query: Query<&Window, With<PrimaryWindow>>,
+) {
+    let texture_handle = asset_server.load("sprites/menu_background.png");
+    let window = window_query.get_single().unwrap();
+
+    commands.spawn((
+        SpriteBundle {
+            texture: texture_handle.into(),
+            sprite: Sprite {
+                custom_size: Option::Some(Vec2::new(window.width(), window.height())),
+                ..default()
+            },
+            transform: Transform::from_xyz(window.width() / 2.0, window.height() / 2.0, -1.0),
+            ..default()
+        },
+        MenuBackground {}
+    ));
+}
+
+pub fn despawn_menu_bg(mut commands: Commands, mut bg_query: Query<Entity, With<MenuBackground>>) {
+    let menu_bg = bg_query.get_single().unwrap();
+    commands.entity(menu_bg).despawn();
+}
+
+
+pub fn start_menu_audio(
+    app_state: Res<State<AppState>>,
+    audio: Res<Audio>,
+    asset_server: Res<AssetServer>,
+) {
+    let audio_track = asset_server.load("audio/main_menu_theme.mp3");
+
+    println!("app_state.0 {:?}", app_state.0);
+
+    if app_state.0 == AppState::MainMenu {
+        audio.play(audio_track).looped();
+    } else if app_state.0 == AppState::Game {
+        audio.pause();
+    }
 }

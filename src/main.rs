@@ -14,10 +14,18 @@ use main_menu::MainMenuPlugin;
 use events::*;
 use systems::*;
 
-use bevy::prelude::*;
+use bevy::{prelude::*, window::*};
+
 fn main() {
     App::new()
-        .add_plugins(DefaultPlugins)
+        .add_plugins(DefaultPlugins.set(WindowPlugin {
+            primary_window: Some(Window {
+                mode: WindowMode::Fullscreen,
+                title: "Side Effect".to_string(),
+                ..default()
+            }),
+            ..default()
+        }))
         .add_state::<AppState>()
         .add_plugin(MainMenuPlugin)
         .add_plugin(GamePlugin)
@@ -38,4 +46,6 @@ pub enum AppState {
     MainMenu,
     Game,
     GameOver,
+    LvlUp,
+    PauseMenu,
 }

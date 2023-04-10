@@ -16,6 +16,7 @@ use super::GameSimulationState;
 pub const ENEMY_SIZE: f32 = 64.0;
 pub const ENEMY_SPEED: f32 = 200.0;
 pub const ENEMY_COUNT: usize = 20;
+pub const DEFAULT_EXPERINCE_DROP_VALUE: usize = 50;
 
 pub const ENEMY_HEALTH: i32 = 150;
 pub const ENEMY_DAMAGE: i32 = 20;
@@ -32,6 +33,7 @@ impl Plugin for EnemyPlugin {
                 wave_timer_tracking_system,
                 spawn_enemie_wave,
                 kill_enemy,
+                animate_enemy,
             )
                 .in_set(OnUpdate(AppState::Game))
                 .in_set(OnUpdate(GameSimulationState::Running)),

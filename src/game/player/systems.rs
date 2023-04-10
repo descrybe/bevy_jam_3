@@ -3,6 +3,7 @@ use bevy::window::PrimaryWindow;
 
 use super::components::Player;
 
+use super::events::ChooseModificationEvent;
 use super::{PLAYER_HEALTH, PLAYER_SIZE, PLAYER_SPEED};
 use crate::assets_cache::resources::AssetsCache;
 use crate::events::GameOver;
@@ -10,6 +11,8 @@ use crate::game::collision::components::{Collidable, CollisionData, Solid};
 use crate::game::health::components::HealthComponent;
 use crate::game::health::events::DeathEvent;
 use crate::game::score::resources::*;
+use crate::game::GameSimulationState;
+use crate::AppState;
 
 pub fn spawn_player(
     mut commands: Commands,
@@ -18,7 +21,7 @@ pub fn spawn_player(
 ) {
     let window = window_query.get_single().unwrap();
 
-    let transformation = Transform::from_xyz(window.width() / 2.0, window.height() / 2.0, 0.0);
+    let transformation = Transform::from_xyz(window.width() / 2.0, window.height() / 2.0, 5.0);
     commands.spawn((
         SpriteBundle {
             sprite: Sprite {
@@ -29,7 +32,11 @@ pub fn spawn_player(
             texture: asset_service.sprites.characters.wizzard.clone(),
             ..default()
         },
-        Player {},
+        Player {
+            experience: 0,
+            level: 1,
+            health: PLAYER_HEALTH,
+        },
         HealthComponent::new(PLAYER_HEALTH),
         Collidable {
             size: Vec2 {
@@ -106,9 +113,11 @@ pub fn player_health_check_system(
     mut commands: Commands,
     mut event_reader: EventReader<DeathEvent>,
     mut game_over_event_writer: EventWriter<GameOver>,
+    health_query: Query<&HealthComponent, With<Player>>,
     player_query: Query<Entity, With<Player>>,
     score: Res<Score>,
 ) {
+    let health = health_query.get_single().unwrap();
     if event_reader.is_empty() {
         return;
     }
@@ -118,7 +127,26 @@ pub fn player_health_check_system(
             continue;
         }
 
-        game_over_event_writer.send(GameOver { score: score.value });
-        commands.entity(event.entity).despawn_recursive();
+        if health.amount() < 0 {
+            game_over_event_writer.send(GameOver { score: score.value });
+            commands.entity(event.entity).despawn_recursive();
+        }
+    }
+}
+
+pub fn player_chose_modification(
+    player_query: Query<Entity, With<Player>>,
+    mut app_state_next_state: ResMut<NextState<AppState>>,
+    mut event_reader: EventReader<ChooseModificationEvent>,
+    mut game_simulation_next_state: ResMut<NextState<GameSimulationState>>,
+    // modification: Query<>
+) {
+    if event_reader.is_empty() {
+        return;
+    }
+
+    for _event in event_reader.iter() {
+        game_simulation_next_state.set(GameSimulationState::Running);
+        app_state_next_state.set(AppState::Game);
     }
 }

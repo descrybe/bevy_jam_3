@@ -22,6 +22,7 @@ pub struct Sprites {
 pub struct ProjectileSprites {
     pub bottle: Handle<Image>,
     pub shuriken: Handle<Image>,
+    pub lightning: Handle<Image>,
 }
 pub struct CharactersSprites {
     pub zombie: Handle<Image>,
@@ -46,6 +47,7 @@ impl FromWorld for AssetsCache {
                 projectiles: ProjectileSprites {
                     bottle: assets_loader.load("sprites/projectile.png"),
                     shuriken: assets_loader.load("sprites/shuriken.png"),
+                    lightning: assets_loader.load("sprites/lightning.png"),
                 },
             },
         };
