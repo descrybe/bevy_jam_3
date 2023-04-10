@@ -1,6 +1,6 @@
 pub mod components;
-pub mod resources;
 pub mod events;
+pub mod resources;
 mod systems;
 
 use events::*;
@@ -27,7 +27,7 @@ impl Plugin for PlayerPlugin {
                     player_movement,
                     change_player_direction,
                     player_health_check_system,
-                    player_chose_modification
+                    player_chose_modification,
                 )
                     .in_set(OnUpdate(AppState::Game))
                     .in_set(OnUpdate(GameSimulationState::Running)),

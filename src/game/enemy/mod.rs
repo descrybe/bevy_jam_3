@@ -33,6 +33,7 @@ impl Plugin for EnemyPlugin {
                 wave_timer_tracking_system,
                 spawn_enemie_wave,
                 kill_enemy,
+                flip_enemy_sprite,
                 animate_enemy,
             )
                 .in_set(OnUpdate(AppState::Game))
