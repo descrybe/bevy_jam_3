@@ -20,12 +20,13 @@ pub struct UIPlugin;
 
 impl Plugin for UIPlugin {
     fn build(&self, app: &mut App) {
-        app.add_system(spawn_simple_map.in_schedule(OnExit(AppState::MainMenu)))
+        app
             .add_system(spawn_health_bar.in_schedule(OnExit(AppState::MainMenu)))
             .add_system(spawn_exp_bar.in_schedule(OnExit(AppState::MainMenu)))
             .add_system(spawn_preview_dices.in_schedule(OnExit(AppState::MainMenu)))
             .add_plugin(PauseMenuPlugin)
             .add_plugin(LvlUpPlugin)
+            .add_plugin(TilemapPlugin)
             .add_systems(
                 (
                     update_health_bar_params,
