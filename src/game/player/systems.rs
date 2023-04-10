@@ -14,24 +14,65 @@ use crate::game::score::resources::*;
 use crate::game::GameSimulationState;
 use crate::AppState;
 
+#[derive(Component, Deref, DerefMut)]
+pub struct AnimationTimer(Timer);
+
+#[derive(Component)]
+pub struct AnimationIndices {
+    first: usize,
+    last: usize,
+}
+
+pub fn animate_player(
+    time: Res<Time>,
+    mut query: Query<(
+        &AnimationIndices,
+        &mut AnimationTimer,
+        &mut TextureAtlasSprite,
+    )>,
+) {
+    for (indices, mut timer, mut sprite) in &mut query {
+        timer.tick(time.delta());
+        if timer.just_finished() {
+            sprite.index = if sprite.index == indices.last {
+                indices.first
+            } else {
+                sprite.index + 1
+            };
+        }
+    }
+}
+
 pub fn spawn_player(
     mut commands: Commands,
     window_query: Query<&Window, With<PrimaryWindow>>,
     asset_service: Res<AssetsCache>,
+    mut texture_atlases: ResMut<Assets<TextureAtlas>>,
 ) {
     let window = window_query.get_single().unwrap();
 
+    // Animation
+    let texture_handle = asset_service.sprites.characters.wizzard.clone();
+    let texture_atlas =
+        TextureAtlas::from_grid(texture_handle, Vec2::new(200.0, 200.0), 6, 1, None, None);
+    let texture_atlas_handle = texture_atlases.add(texture_atlas);
+    let animation_indices = AnimationIndices { first: 1, last: 5 };
+    let sprite_index = animation_indices.first;
+
     let transformation = Transform::from_xyz(window.width() / 2.0, window.height() / 2.0, 10.0);
     commands.spawn((
-        SpriteBundle {
-            sprite: Sprite {
-                custom_size: Option::Some(Vec2::new(PLAYER_SIZE, PLAYER_SIZE)),
+        SpriteSheetBundle {
+            texture_atlas: texture_atlas_handle.clone(),
+            sprite: TextureAtlasSprite {
+                index: sprite_index,
+                custom_size: Option::Some(Vec2::new(200.0, 200.0)),
                 ..default()
             },
             transform: transformation,
-            texture: asset_service.sprites.characters.wizzard.clone(),
             ..default()
         },
+        animation_indices,
+        AnimationTimer(Timer::from_seconds(0.1, TimerMode::Repeating)),
         Player {
             experience: 0,
             level: 1,
@@ -53,12 +94,6 @@ pub fn spawn_player(
             collision_impact: 0.1,
         },
     ));
-}
-
-pub fn despawn_player(mut commands: Commands, player_query: Query<Entity, With<Player>>) {
-    if let Ok(player_entity) = player_query.get_single() {
-        commands.entity(player_entity).despawn();
-    }
 }
 
 pub fn player_movement(
@@ -98,14 +133,14 @@ pub fn player_movement(
 
 pub fn change_player_direction(
     keyboard_input: Res<Input<KeyCode>>,
-    mut player_query: Query<&mut Sprite, With<Player>>,
+    mut player_query: Query<&mut TextureAtlasSprite, With<Player>>,
 ) {
     let mut sprite = player_query.single_mut();
 
     if keyboard_input.any_pressed([KeyCode::Left, KeyCode::A]) {
-        sprite.flip_x = true;
-    } else if keyboard_input.any_pressed([KeyCode::Right, KeyCode::D]) {
         sprite.flip_x = false;
+    } else if keyboard_input.any_pressed([KeyCode::Right, KeyCode::D]) {
+        sprite.flip_x = true;
     }
 }
 

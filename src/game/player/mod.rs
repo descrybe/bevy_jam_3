@@ -28,6 +28,7 @@ impl Plugin for PlayerPlugin {
                     change_player_direction,
                     player_health_check_system,
                     player_chose_modification,
+                    animate_player,
                 )
                     .in_set(OnUpdate(AppState::Game))
                     .in_set(OnUpdate(GameSimulationState::Running)),

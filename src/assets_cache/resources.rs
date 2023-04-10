@@ -54,7 +54,7 @@ impl FromWorld for AssetsCache {
             sprites: Sprites {
                 characters: CharactersSprites {
                     zombie: assets_loader.load("sprites/zombie.png"),
-                    wizzard: assets_loader.load("sprites/player.png"),
+                    wizzard: assets_loader.load("sprites/runcycleplayer.png"),
                 },
                 ui: UISprites {
                     dices: Dices {
