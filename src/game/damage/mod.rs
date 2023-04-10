@@ -8,7 +8,7 @@ use self::{events::DamageEvent, systems::*};
 
 use super::{
     bullet::components::Bullet, enemy::components::Enemy, player::components::Player,
-    radiance::components::Radiance, shuriken::components::Shuriken,
+    radiance::components::Radiance, shuriken::components::Shuriken, lighting::components::Lighting,
 };
 
 pub struct DamagePlugin;
@@ -26,6 +26,7 @@ impl Plugin for DamagePlugin {
                     collision_damage_system::<Bullet, Enemy>,
                     collision_damage_system::<Radiance, Enemy>,
                     collision_damage_system::<Shuriken, Enemy>,
+                    collision_damage_system::<Lighting, Enemy>,
                     collision_damage_system::<Enemy, Player>,
                 )
                     .after(damage_dealler_destruct_system),
