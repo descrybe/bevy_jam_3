@@ -1,5 +1,3 @@
-use std::f32::consts::PI;
-
 use super::{components::Shuriken, SHURIKEN_DAMAGE};
 use crate::{
     assets_cache::resources::AssetsCache,

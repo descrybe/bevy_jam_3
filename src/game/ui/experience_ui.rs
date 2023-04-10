@@ -1,8 +1,6 @@
 use crate::game::{enemy::ENEMY_SIZE, player::components::Player};
 
-use super::constants::*;
 use bevy::{prelude::*, window::PrimaryWindow};
-use rand::seq::index;
 
 #[derive(Component)]
 pub struct ExperienceBar {}
@@ -63,84 +61,6 @@ pub fn setup_texture(
     ));
 }
 
-// pub fn spawn_exp_bar(
-//     mut commands: Commands,
-//     asset_server: Res<AssetServer>,
-//     texture_assets: Assets<TextureAtlas>,
-// ) {
-//     commands
-//         .spawn(NodeBundle {
-//             style: EXPERIENCE_BAR_WRAPPER_STYLES,
-//             ..default()
-//         })
-//         .with_children(|parent| {
-//             parent
-//                 .spawn(NodeBundle {
-//                     style: Style {
-//                         size: Size::width(EXPERIENCE_BAR_WIDTH),
-//                         border: UiRect::all(Val::Px(2.0)),
-//                         ..default()
-//                     },
-//                     background_color: EXPERIENCE_BAR_BORDER_COLOR.into(),
-//                     ..default()
-//                 })
-//                 .with_children(|parent| {
-//                     parent.spawn(NodeBundle {
-//                         style: Style {
-//                             size: Size::width(Val::Percent(100.0)),
-//                             ..default()
-//                         },
-//                         background_color: EXPREIENCE_BAR_BACKGROUND_COLOR.into(),
-//                         ..default()
-//                     });
-//                 })
-//                 .with_children(|parent| {
-//                     parent
-//                         .spawn(NodeBundle {
-//                             style: Style {
-//                                 size: Size {
-//                                     width: Val::Percent(75.0), // сюда передавать Experience.value/EXPERIENCE_TO_LVL_UP
-//                                     height: Val::Px(31.0),
-//                                 },
-//                                 position_type: PositionType::Absolute,
-//                                 position: UiRect {
-//                                     top: Val::Auto,
-//                                     left: Val::Undefined,
-//                                     right: Val::Auto,
-//                                     bottom: Val::Undefined,
-//                                 },
-//                                 ..default()
-//                             },
-//                             background_color: EXPREIENCE_BAR_MAIN_COLOR.into(),
-//                             ..default()
-//                         })
-//                         .with_children(|parent| {
-//                             parent.spawn((
-//                                 TextBundle::from_section(
-//                                     "LVL 1", // тут вставлять значение текущего уровня
-//                                     TextStyle {
-//                                         font: asset_server.load("fonts/CyrillicPixel.ttf"),
-//                                         font_size: 30.0,
-//                                         color: Color::WHITE,
-//                                     },
-//                                 )
-//                                 .with_style(Style {
-//                                     position_type: PositionType::Absolute,
-//                                     position: UiRect {
-//                                         top: Val::Auto,
-//                                         left: Val::Auto,
-//                                         right: Val::Auto,
-//                                         bottom: Val::Px(20.0),
-//                                     },
-//                                     ..default()
-//                                 }),
-//                                 Label,
-//                             ));
-//                         });
-//                 });
-//         });
-// }
-
 pub fn spawn_exp_bar(
     mut commands: Commands,
     asset_server: Res<AssetServer>,
@@ -161,6 +81,7 @@ pub fn spawn_exp_bar(
                     custom_size: Option::Some(Vec2::new(100.0, 40.0)),
                     ..default()
                 },
+                transform: Transform::from_xyz(0.0, 0.0, 5.0),
                 ..default()
             },
             ExperienceBar {},
@@ -173,7 +94,7 @@ pub fn spawn_exp_bar(
                     custom_size: Option::Some(Vec2::new(50.0, 40.0)),
                     ..default()
                 },
-                transform: Transform::from_xyz(-200.0, 0.0, 0.0),
+                transform: Transform::from_xyz(-200.0, 0.0, 5.0),
                 ..default()
             });
         })
@@ -185,7 +106,7 @@ pub fn spawn_exp_bar(
                     custom_size: Option::Some(Vec2::new(50.0, 40.0)),
                     ..default()
                 },
-                transform: Transform::from_xyz(200.0, 0.0, 0.0),
+                transform: Transform::from_xyz(200.0, 0.0, 5.0),
                 ..default()
             });
         });
@@ -194,13 +115,14 @@ pub fn spawn_exp_bar(
 pub fn stick_exp_bar(
     mut xp_bar_query: Query<&mut Transform, (Without<Player>, With<ExperienceBar>)>,
     player_query: Query<&Transform, With<Player>>,
-    window_query: Query<&Window, With<PrimaryWindow>>
+    window_query: Query<&Window, With<PrimaryWindow>>,
 ) {
     let mut xp_bar_transform = xp_bar_query.get_single_mut().unwrap();
-    let window  = window_query.get_single().unwrap();
+    let window = window_query.get_single().unwrap();
 
     if let Ok(player_transform) = player_query.get_single() {
         xp_bar_transform.translation.x = player_transform.translation.x;
-        xp_bar_transform.translation.y = player_transform.translation.y - window.height() / 2.0 + 50.0;
+        xp_bar_transform.translation.y =
+            player_transform.translation.y - window.height() / 2.0 + 50.0;
     }
 }

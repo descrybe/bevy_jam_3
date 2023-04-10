@@ -1,6 +1,5 @@
 use crate::game::player::components::Player;
 
-use super::constants::*;
 use bevy::{prelude::*, window::PrimaryWindow};
 
 pub const DICE_DIMENTION_SPRITE_SIZE: f32 = 202.0;

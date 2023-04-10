@@ -58,7 +58,7 @@ pub fn spawn_lvlup_dices(
         LvlUpText {},
     ));
 
-    for index in 0..3 {
+    for _index in 0..3 {
         commands.spawn((
             ButtonBundle {
                 image: UiImage {
@@ -83,7 +83,7 @@ pub fn spawn_lvlup_dices(
                     ),
                     ..Style::DEFAULT
                 },
-                transform: Transform::from_xyz(0.0, 0.0, 10.0),
+                transform: Transform::from_xyz(0.0, 0.0, 20.0),
                 ..default()
             },
             DiceButton {

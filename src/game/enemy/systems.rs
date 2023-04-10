@@ -180,9 +180,9 @@ pub fn flip_enemy_sprite(
 pub fn kill_enemy(
     enemy_query: Query<Entity, With<Enemy>>,
     mut app_state_next_state: ResMut<NextState<AppState>>,
+    mut game_simulation_next_state: ResMut<NextState<GameSimulationState>>,
     mut commands: Commands,
     mut death_event_reader: EventReader<DeathEvent>,
-    mut game_simulation_next_state: ResMut<NextState<GameSimulationState>>,
     mut player_query: Query<&mut Player>,
 ) {
     if death_event_reader.is_empty() {

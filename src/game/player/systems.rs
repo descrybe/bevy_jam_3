@@ -21,7 +21,7 @@ pub fn spawn_player(
 ) {
     let window = window_query.get_single().unwrap();
 
-    let transformation = Transform::from_xyz(window.width() / 2.0, window.height() / 2.0, 5.0);
+    let transformation = Transform::from_xyz(window.width() / 2.0, window.height() / 2.0, 10.0);
     commands.spawn((
         SpriteBundle {
             sprite: Sprite {
@@ -135,7 +135,7 @@ pub fn player_health_check_system(
 }
 
 pub fn player_chose_modification(
-    player_query: Query<Entity, With<Player>>,
+    // player_query: Query<Entity, With<Player>>,
     mut app_state_next_state: ResMut<NextState<AppState>>,
     mut event_reader: EventReader<ChooseModificationEvent>,
     mut game_simulation_next_state: ResMut<NextState<GameSimulationState>>,
