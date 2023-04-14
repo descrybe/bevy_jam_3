@@ -1,0 +1,23 @@
+name: Rust
+
+on:
+  push:
+    branches: [ "master" ]
+  pull_request:
+    branches: [ "master" ]
+
+env:
+  CARGO_TERM_COLOR: always
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    outputs: 
+      binaries: result
+    steps:
+    - uses: actions/checkout@v3
+    - name: Build
+      run: cargo build --verbose --release
+    - name: Move binaries and assets to result folder
+      run: mv -f target/release/bevy_jam.exe target/release/bevy_jam.d assets result
+    
