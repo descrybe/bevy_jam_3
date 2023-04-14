@@ -10,9 +10,8 @@ jobs:
     env:
       RESULT_DIRECTORY: result
       EXECUTABLE_FILE_NAME: bevy_jam
+      
     runs-on: windows-latest
-    outputs: 
-      binaries: "${{ runner.os }}-${{ env.RESULT_DIRECTORY}}"
     steps:
     - name: Checkout sources
       uses: actions/checkout@v3
@@ -35,4 +34,10 @@ jobs:
       run: cargo build --release
       
     - name: Collect binaries to result directory
-      run: Move-Item -Path "target/release/${{ env.EXECUTABLE_FILE_NAME }}.d", "target/release/${{ env.EXECUTABLE_FILE_NAME }}.exe", "assets" -Destination "${{ runner.os }}-${{ env.RESULT_DIRECTORY}}"
+      run: Move-Item -Path "target/release/${{ env.EXECUTABLE_FILE_NAME }}.d", "target/release/${{ env.EXECUTABLE_FILE_NAME }}.exe", "assets" -Destination "${{ runner.os }}-${{ env.RESULT_DIRECTORY}}/"
+
+    - name: Publish artifacts
+      uses: actions/upload-artifact@v2
+      with:
+        name: ${{ runner.os }}
+        path: "${{ runner.os }}-${{ env.RESULT_DIRECTORY}}
