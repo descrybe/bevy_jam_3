@@ -1,0 +1,38 @@
+name: Build for Windows
+
+on: [workflow_dispatch]
+
+env:
+  CARGO_TERM_COLOR: always
+
+jobs:
+  build:
+    env:
+      RESULT_DIRECTORY: result
+      EXECUTABLE_FILE_NAME: bevy_jam
+    runs-on: windows-latest
+    outputs: 
+      binaries: result
+    steps:
+    - name: Checkout sources
+      uses: actions/checkout@v3
+    
+    - name: Cache
+      uses: actions/cache@v2
+      with:
+          path: |
+            ~/.cargo/bin/
+            ~/.cargo/registry/index/
+            ~/.cargo/registry/cache/
+            ~/.cargo/git/db/
+            target/
+          key: ${{ runner.os }}-${{ env.EXECUTABLE_FILE_NAME }}-${{ hashFiles('**/Cargo.toml') }}
+          
+    - name: Install stable toolchain
+      uses: dtolnay/rust-toolchain@stable
+    
+    - name: Build
+      run: cargo build --release
+      
+    - name: Collect binaries to result directory
+      run: Move-Item -Path "target/release/${{ env.EXECUTABLE_FILE_NAME }}.d", "target/release/${{ env.EXECUTABLE_FILE_NAME }}.exe", "assets" -Destination "${{ env.RESULT_DIRECTORY}}"
