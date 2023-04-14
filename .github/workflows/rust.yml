@@ -15,9 +15,29 @@ jobs:
     outputs: 
       binaries: result
     steps:
-    - uses: actions/checkout@v3
+    - name: Checkout sources
+      uses: actions/checkout@v3
+    
+    - name: Cache
+      uses: actions/cache@v2
+      with:
+          path: |
+            ~/.cargo/bin/
+            ~/.cargo/registry/index/
+            ~/.cargo/registry/cache/
+            ~/.cargo/git/db/
+            target/
+          key: ${{ runner.os }}-cargo-test-${{ hashFiles('**/Cargo.toml') }}
+          
+    - name: Install stable toolchain
+      uses: dtolnay/rust-toolchain@stable
+      
+    - name: Install Dependencies
+      run: sudo apt-get update; sudo apt-get install pkg-config libx11-dev libasound2-dev libudev-dev libxcb-render0-dev libxcb-shape0-dev libxcb-xfixes0-dev
+    
     - name: Build
-      run: cargo build --verbose --release
-    - name: Move binaries and assets to result folder
+      run: cargo build --release
+      
+    - name: Collect binaries to result folder
       run: mv -f target/release/bevy_jam.exe target/release/bevy_jam.d assets result
     
