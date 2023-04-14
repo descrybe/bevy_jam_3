@@ -1,10 +1,6 @@
-name: Rust
+name: Build for Linux
 
-on:
-  push:
-    branches: [ "master" ]
-  pull_request:
-    branches: [ "master" ]
+on: [workflow_dispatch]
 
 env:
   CARGO_TERM_COLOR: always
@@ -45,5 +41,5 @@ jobs:
       run: mkdir ${{ env.RESULT_DIRECTORY }} -p -v
       
     - name: Collect binaries to result directory
-      run: mv -f "target/release/${{ env.EXECUTABLE_FILE_NAME }}.exe" "target/release/${{ env.EXECUTABLE_FILE_NAME }}.d" "assets" "${{ env.RESULT_DIRECTORY }}"
+      run: mv -f "target/release/${{ env.EXECUTABLE_FILE_NAME }}" "target/release/${{ env.EXECUTABLE_FILE_NAME }}.d" "assets" "${{ env.RESULT_DIRECTORY }}"
     
