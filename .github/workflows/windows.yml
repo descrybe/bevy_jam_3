@@ -9,7 +9,7 @@ jobs:
   build:
     env:
       RESULT_DIRECTORY_NAME: result
-      RESULT_DIRECTORY: ${{ env.runner.os }}-${{ env.RESULT_DIRECTORY}}
+      RESULT_DIRECTORY: ${{ runner.os }}-${{ env.RESULT_DIRECTORY}}
       EXECUTABLE_FILE_NAME: bevy_jam
     runs-on: windows-latest
     outputs: 
