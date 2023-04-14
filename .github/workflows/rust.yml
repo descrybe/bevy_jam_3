@@ -11,6 +11,9 @@ env:
 
 jobs:
   build:
+    env:
+      RESULT_DIRECTORY: result
+      EXECUTABLE_FILE_NAME: bevy_jam
     runs-on: ubuntu-latest
     outputs: 
       binaries: result
@@ -38,6 +41,9 @@ jobs:
     - name: Build
       run: cargo build --release
       
-    - name: Collect binaries to result folder
-      run: mv -f target/release/bevy_jam.exe target/release/bevy_jam.d assets result
+    - name: Create result directory
+      run: mkdir $RESULT_DIRECTORY -p -v
+      
+    - name: Collect binaries to result directory
+      run: mv -f target/release/$EXECUTABLE_FILE_NAME.exe target/release/$EXECUTABLE_FILE_NAME.d assets $RESULT_DIRECTORY
     
