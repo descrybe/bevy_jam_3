@@ -65,7 +65,7 @@ pub fn spawn_player(
             texture_atlas: texture_atlas_handle.clone(),
             sprite: TextureAtlasSprite {
                 index: sprite_index,
-                custom_size: Option::Some(Vec2::new(200.0, 200.0)),
+                custom_size: Option::Some(Vec2::new(PLAYER_SIZE, PLAYER_SIZE)),
                 ..default()
             },
             transform: transformation,

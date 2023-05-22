@@ -12,7 +12,7 @@ use crate::{systems::camera_follow, AppState};
 use bevy::prelude::*;
 
 pub const PLAYER_SPEED: f32 = 500.0;
-pub const PLAYER_SIZE: f32 = 64.0;
+pub const PLAYER_SIZE: f32 = 100.0;
 pub const PLAYER_HEALTH: i32 = 20000;
 
 pub struct PlayerPlugin;
