@@ -13,7 +13,7 @@ use self::{events::WaveSpawnEvent, resources::EnemyWavesSpawnConfig};
 
 use super::GameSimulationState;
 
-pub const ENEMY_SIZE: f32 = 200.0;
+pub const ENEMY_SIZE: f32 = 100.0;
 pub const ENEMY_SPEED: f32 = 200.0;
 pub const ENEMY_COUNT: usize = 20;
 pub const DEFAULT_EXPERINCE_DROP_VALUE: usize = 50;

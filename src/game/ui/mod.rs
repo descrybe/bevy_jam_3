@@ -20,8 +20,7 @@ pub struct UIPlugin;
 
 impl Plugin for UIPlugin {
     fn build(&self, app: &mut App) {
-        app
-            .add_system(spawn_health_bar.in_schedule(OnExit(AppState::MainMenu)))
+        app.add_system(spawn_health_bar.in_schedule(OnExit(AppState::MainMenu)))
             .add_system(spawn_exp_bar.in_schedule(OnExit(AppState::MainMenu)))
             .add_system(spawn_preview_dices.in_schedule(OnExit(AppState::MainMenu)))
             .add_plugin(PauseMenuPlugin)
